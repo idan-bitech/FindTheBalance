@@ -54,8 +54,12 @@ export default async function GroupPage({ params }: GroupPageProps) {
           ) : (
             <div className="mb-5" />
           )}
-          <Link href={`/groups/${groupId}/events/new`} className={buttonPrimaryClassName}>
-            הוספת הוצאה
+          <Link
+            href={`/groups/${groupId}/events/new`}
+            className={`gap-1.5 ${buttonPrimaryClassName}`}
+          >
+            <span aria-hidden="true">➕</span>
+            <span>הוספת הוצאה</span>
           </Link>
         </PageCard>
 

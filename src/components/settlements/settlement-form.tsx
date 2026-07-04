@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { PageCard } from "@/components/app/page-card";
+import { WhatsappReminderButton } from "@/components/settlements/whatsapp-reminder-button";
 import { formatPairSummaryMain, formatShekelInput } from "@/lib/balance-display";
 import {
   buttonPrimaryClassName,
@@ -11,6 +12,7 @@ import {
   textareaClassName,
 } from "@/lib/ui-classes";
 import { createSettlementAction, type CreateSettlementState } from "@/server/settlements";
+import type { PronounPreference } from "@/types/database";
 
 const initialState: CreateSettlementState = { error: null };
 
@@ -19,6 +21,8 @@ type SettlementFormProps = {
   friendUserId: string;
   friendName: string;
   netAmountCents: number;
+  creditorDisplayName: string;
+  creditorPronounPreference: PronounPreference | null | undefined;
 };
 
 export function SettlementForm({
@@ -26,6 +30,8 @@ export function SettlementForm({
   friendUserId,
   friendName,
   netAmountCents,
+  creditorDisplayName,
+  creditorPronounPreference,
 }: SettlementFormProps) {
   const boundAction = createSettlementAction.bind(null, groupId, friendUserId);
   const [state, formAction, pending] = useActionState(boundAction, initialState);
@@ -35,7 +41,7 @@ export function SettlementForm({
   return (
     <PageCard>
       <h2 className="mb-2 text-lg font-bold text-stone-950 sm:text-xl">סגירת חוב</h2>
-      <p className="mb-6 text-stone-700">{formatPairSummaryMain(friendName, netAmountCents)}</p>
+      <p className="mb-6 text-stone-700">{formatPairSummaryMain(netAmountCents)}</p>
 
       <form action={formAction} className="space-y-4">
         <div>
@@ -66,6 +72,15 @@ export function SettlementForm({
           {pending ? "שומר..." : submitLabel}
         </button>
       </form>
+
+      {netAmountCents > 0 ? (
+        <WhatsappReminderButton
+          friendName={friendName}
+          creditorDisplayName={creditorDisplayName}
+          creditorPronounPreference={creditorPronounPreference}
+          amountCents={netAmountCents}
+        />
+      ) : null}
     </PageCard>
   );
 }

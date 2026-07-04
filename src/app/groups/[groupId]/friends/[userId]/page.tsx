@@ -8,6 +8,7 @@ import {
   formatPairSummaryMain,
   formatPairSummarySecondary,
 } from "@/lib/balance-display";
+import { createClient } from "@/lib/supabase/server";
 import { getGroupWithMembers } from "@/server/groups";
 import { getPairBalance, getPairLedgerEntries } from "@/server/settlements";
 
@@ -23,9 +24,15 @@ export default async function PairDetailPage({ params }: PairDetailPageProps) {
     redirect("/dashboard");
   }
 
-  const [pairBalance, entries] = await Promise.all([
+  const supabase = await createClient();
+  const [pairBalance, entries, { data: currentUserProfile }] = await Promise.all([
     getPairBalance(groupId, friendUserId),
     getPairLedgerEntries(groupId, friendUserId),
+    supabase
+      .from("profiles")
+      .select("display_name, pronoun_preference")
+      .eq("id", groupData.currentUserId)
+      .maybeSingle(),
   ]);
 
   if (!pairBalance) {
@@ -42,7 +49,7 @@ export default async function PairDetailPage({ params }: PairDetailPageProps) {
         <PageCard>
           <h1 className="mb-2 text-2xl font-bold text-stone-950 sm:text-3xl">{friendName}</h1>
           <p className="text-lg font-medium text-stone-950">
-            {formatPairSummaryMain(friendName, netAmountCents)}
+            {formatPairSummaryMain(netAmountCents)}
           </p>
           {summarySecondary ? (
             <p className="mt-2 text-stone-600">{summarySecondary}</p>
@@ -55,6 +62,8 @@ export default async function PairDetailPage({ params }: PairDetailPageProps) {
             friendUserId={friendUserId}
             friendName={friendName}
             netAmountCents={netAmountCents}
+            creditorDisplayName={currentUserProfile?.display_name ?? "משתמש"}
+            creditorPronounPreference={currentUserProfile?.pronoun_preference}
           />
         ) : (
           <BalancedStateCard />

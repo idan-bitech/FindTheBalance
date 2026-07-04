@@ -17,14 +17,14 @@ export function formatBalanceSecondaryText(netAmountCents: number): string | nul
   return null;
 }
 
-export function formatPairSummaryMain(friendName: string, netAmountCents: number): string {
+export function formatPairSummaryMain(netAmountCents: number): string {
   if (netAmountCents > 0) {
-    return `${friendName} חייב לך ${formatILS(netAmountCents)}`;
+    return `חייב לך ${formatILS(netAmountCents)}`;
   }
   if (netAmountCents < 0) {
-    return `אתה חייב ל${friendName} ${formatILS(Math.abs(netAmountCents))}`;
+    return `אתה חייב ${formatILS(Math.abs(netAmountCents))}`;
   }
-  return `אין חוב פתוח בינך לבין ${friendName}`;
+  return "אין חוב פתוח ביניכם";
 }
 
 export function formatPairSummarySecondary(netAmountCents: number): string | null {
