@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
+import { EmptyState } from "@/components/app/empty-state";
 import { PageCard, PageSection } from "@/components/app/page-card";
 import { CancelEventForm } from "@/components/events/cancel-event-form";
 import { formatEntryDate } from "@/lib/balance-display";
@@ -95,7 +96,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">השפעה על יתרות</h2>
 
           {nonPayerEntries.length === 0 ? (
-            <p className="text-neutral-600">אין השפעה על יתרות בין חברים</p>
+            <EmptyState title="אין השפעה על יתרות בין חברים" />
           ) : (
             <ul className="space-y-2">
               {nonPayerEntries.map((entry) => {

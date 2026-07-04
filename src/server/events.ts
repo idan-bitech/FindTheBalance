@@ -122,7 +122,7 @@ export async function createEventAction(
     .single();
 
   if (eventError || !event) {
-    return { error: "יצירת ההוצאה נכשלה. נסו שוב" };
+    return { error: "לא הצלחנו לשמור את ההוצאה. נסו שוב." };
   }
 
   const shares = splitEqually(totalAmountCents, participantIds);
@@ -138,7 +138,7 @@ export async function createEventAction(
     .insert(participantRows);
 
   if (participantsError) {
-    return { error: "יצירת ההוצאה נכשלה. נסו שוב" };
+    return { error: "לא הצלחנו לשמור את ההוצאה. נסו שוב." };
   }
 
   const ledgerRows = createEventLedgerEntries({
@@ -153,7 +153,7 @@ export async function createEventAction(
     const { error: ledgerError } = await supabase.from("ledger_entries").insert(ledgerRows);
 
     if (ledgerError) {
-      return { error: "יצירת ההוצאה נכשלה. נסו שוב" };
+      return { error: "לא הצלחנו לשמור את ההוצאה. נסו שוב." };
     }
   }
 
@@ -379,7 +379,7 @@ export async function cancelEventAction(
     .eq("group_id", groupId);
 
   if (updateEventError) {
-    return { error: "ביטול ההוצאה נכשל. נסו שוב" };
+    return { error: "לא הצלחנו לבטל את ההוצאה. נסו שוב." };
   }
 
   const { error: voidLedgerError } = await supabase
@@ -390,7 +390,7 @@ export async function cancelEventAction(
     .eq("source_id", eventId);
 
   if (voidLedgerError) {
-    return { error: "ביטול ההוצאה נכשל. נסו שוב" };
+    return { error: "לא הצלחנו לבטל את ההוצאה. נסו שוב." };
   }
 
   redirect(`/groups/${groupId}/events/${eventId}`);

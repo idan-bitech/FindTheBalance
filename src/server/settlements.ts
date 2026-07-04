@@ -171,7 +171,7 @@ export async function createSettlementAction(
     .single();
 
   if (settlementError || !settlement) {
-    return { error: "סגירת החוב נכשלה. נסו שוב" };
+    return { error: "לא הצלחנו לסגור את החוב. נסו שוב." };
   }
 
   const { error: ledgerError } = await supabase.from("ledger_entries").insert({
@@ -185,7 +185,7 @@ export async function createSettlementAction(
   });
 
   if (ledgerError) {
-    return { error: "סגירת החוב נכשלה. נסו שוב" };
+    return { error: "לא הצלחנו לסגור את החוב. נסו שוב." };
   }
 
   redirect(`/groups/${groupId}/friends/${friendUserId}`);

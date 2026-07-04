@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/app/empty-state";
 import {
   formatEntryDate,
   formatLedgerEntryDescription,
@@ -18,7 +19,7 @@ export function PairLedgerTimeline({
   friendName,
 }: PairLedgerTimelineProps) {
   if (entries.length === 0) {
-    return <p className="text-neutral-600">אין היסטוריה עדיין</p>;
+    return <EmptyState title="אין היסטוריה עדיין" />;
   }
 
   return (

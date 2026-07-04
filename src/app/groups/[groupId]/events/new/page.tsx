@@ -38,7 +38,9 @@ export default async function NewEventPage({ params }: NewEventPageProps) {
     >
       <PageCard>
         <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">הוספת הוצאה</h1>
-        <p className="mb-6 text-neutral-600">הזינו פרטי הוצאה וחלקו בין המשתתפים</p>
+        <p className="mb-6 text-neutral-600">
+          הזינו את הסכום ובחרו מי השתתף. אנחנו נחשב אוטומטית כמה כל אחד חייב.
+        </p>
 
         <CreateEventForm
           groupId={groupId}

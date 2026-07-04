@@ -61,7 +61,7 @@ export default async function PairDetailPage({ params }: PairDetailPageProps) {
         )}
 
         <PageCard>
-          <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">היסטוריה</h2>
+          <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">היסטוריית התחשבנות</h2>
           <PairLedgerTimeline
             entries={entries}
             currentUserId={groupData.currentUserId}

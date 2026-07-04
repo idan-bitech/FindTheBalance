@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { errorBoxClassName } from "@/lib/ui-classes";
 import { cancelEventAction, type CancelEventState } from "@/server/events";
 
 const initialState: CancelEventState = { error: null };
@@ -21,11 +22,7 @@ export function CancelEventForm({ groupId, eventId }: CancelEventFormProps) {
       </p>
 
       <form action={formAction}>
-        {state.error ? (
-          <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
-            {state.error}
-          </p>
-        ) : null}
+        {state.error ? <p className={`mb-4 ${errorBoxClassName}`}>{state.error}</p> : null}
 
         <button
           type="submit"

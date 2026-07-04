@@ -34,7 +34,7 @@ function getHebrewRegisterError(error: { message: string; code?: string }): stri
     return "כתובת האימייל לא תקינה.";
   }
 
-  return "ההרשמה נכשלה. נסו שוב";
+  return "לא הצלחנו ליצור את החשבון. נסו שוב.";
 }
 
 type RegisterFormProps = {

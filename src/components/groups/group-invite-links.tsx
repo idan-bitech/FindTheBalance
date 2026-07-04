@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { EmptyState } from "@/components/app/empty-state";
 import { formatEntryDate } from "@/lib/balance-display";
 import {
   buttonPrimaryClassName,
@@ -134,6 +135,10 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
 
   return (
     <div className="space-y-4">
+      <p className="text-sm text-neutral-500">
+        צרו לינק ושלחו אותו לחברים כדי שיוכלו להצטרף לקבוצה.
+      </p>
+
       <form action={createFormAction}>
         <button type="submit" disabled={createPending} className={buttonPrimaryClassName}>
           {createPending ? "יוצר לינק..." : "יצירת לינק הזמנה"}
@@ -145,7 +150,7 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
       {createState.success ? <p className={successBoxClassName}>{createState.success}</p> : null}
 
       {showEmptyState ? (
-        <p className="text-neutral-600">עדיין לא נוצר לינק הזמנה לקבוצה</p>
+        <EmptyState title="עדיין לא נוצר לינק הזמנה לקבוצה" />
       ) : inviteLinks.length > 0 ? (
         <ul className="space-y-3">
           {inviteLinks.map((link) => (

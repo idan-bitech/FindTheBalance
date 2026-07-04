@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
+import { EmptyState } from "@/components/app/empty-state";
 import { PageCard, PageSection } from "@/components/app/page-card";
 import { buttonPrimaryClassName } from "@/lib/ui-classes";
 import { createClient } from "@/lib/supabase/server";
@@ -68,14 +69,11 @@ export default async function DashboardPage() {
           </div>
 
           {groups.length === 0 ? (
-            <div className="rounded-2xl bg-neutral-50 px-5 py-10 text-center">
-              <p className="mb-2 text-lg font-semibold text-neutral-900">
-                עדיין אין לך קבוצות
-              </p>
-              <p className="text-neutral-600">
-                צרו קבוצה ראשונה כדי להתחיל לנהל התחשבנויות
-              </p>
-            </div>
+            <EmptyState
+              boxed
+              title="עדיין אין לך קבוצות"
+              description="צרו קבוצה ראשונה כדי להתחיל לנהל התחשבנויות"
+            />
           ) : (
             <ul className="space-y-3">
               {groups.map((group) => (

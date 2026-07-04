@@ -22,7 +22,7 @@ function getHebrewAuthError(message: string): string {
     return "יש לאשר את כתובת האימייל לפני ההתחברות";
   }
 
-  return "ההתחברות נכשלה. נסו שוב";
+  return "לא הצלחנו לחבר אתכם. נסו שוב.";
 }
 
 type LoginFormProps = {

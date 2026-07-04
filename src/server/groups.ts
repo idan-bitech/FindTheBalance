@@ -143,7 +143,7 @@ export async function addMemberByEmail(
   });
 
   if (insertError) {
-    return { error: "הוספת החבר נכשלה. נסו שוב", success: null };
+    return { error: "לא הצלחנו להוסיף את החבר לקבוצה. נסו שוב.", success: null };
   }
 
   return { error: null, success: "החבר נוסף לקבוצה בהצלחה" };

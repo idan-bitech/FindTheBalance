@@ -84,7 +84,7 @@ export async function createGroupInviteLinkAction(
 
   if (error) {
     console.error("createGroupInviteLinkAction failed", error);
-    return { error: "לא הצלחנו ליצור לינק הזמנה", success: null };
+    return { error: "לא הצלחנו ליצור לינק הזמנה. נסו שוב.", success: null };
   }
 
   revalidatePath(`/groups/${groupId}`);
@@ -117,7 +117,7 @@ export async function revokeGroupInviteLinkAction(
     .eq("is_active", true);
 
   if (error) {
-    return { error: "לא הצלחנו לבטל את לינק ההזמנה", success: null };
+    return { error: "לא הצלחנו לבטל את לינק ההזמנה. נסו שוב.", success: null };
   }
 
   revalidatePath(`/groups/${groupId}`);
@@ -183,7 +183,7 @@ export async function acceptInviteAction(
   });
 
   if (error) {
-    return { error: "לא הצלחנו לצרף אותך לקבוצה" };
+    return { error: "לא הצלחנו לצרף אותך לקבוצה. נסו שוב." };
   }
 
   const result = (Array.isArray(data) ? data[0] : data) as { group_id?: string } | null;
@@ -194,7 +194,7 @@ export async function acceptInviteAction(
     if (preview?.group_id) {
       redirect(`/groups/${preview.group_id}`);
     }
-    return { error: "לא הצלחנו לצרף אותך לקבוצה" };
+    return { error: "לא הצלחנו לצרף אותך לקבוצה. נסו שוב." };
   }
 
   redirect(`/groups/${groupId}`);

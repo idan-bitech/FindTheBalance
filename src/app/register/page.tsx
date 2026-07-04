@@ -14,8 +14,8 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
   return (
     <PublicPageShell>
       <PageCard>
-        <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">הרשמה</h1>
-        <p className="mb-6 text-neutral-600">צרו חשבון חדש כדי להתחיל</p>
+        <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">יוצרים חשבון ומתחילים</h1>
+        <p className="mb-6 text-neutral-600">כמה פרטים קטנים, ואפשר להצטרף לקבוצות ולנהל הוצאות יחד</p>
         <RegisterForm redirectTo={redirectTo} />
       </PageCard>
     </PublicPageShell>

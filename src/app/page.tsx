@@ -13,8 +13,8 @@ export default function Home() {
           </h1>
 
           <p className="mb-8 text-base leading-8 text-neutral-600 sm:text-lg">
-            אפליקציה פשוטה לניהול התחשבנויות בקבוצות חברים — מי שילם, מי
-            השתתף, מי חייב למי, ומתי החוב נסגר.
+            פותחים קבוצה, מוסיפים הוצאות, ורואים תמיד מי חייב למי — בלי
+            אקסלים ובלי בלגן.
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
+import { EmptyState } from "@/components/app/empty-state";
 import { PageCard, PageSection } from "@/components/app/page-card";
 import { FriendBalanceRow } from "@/components/balances/friend-balance-row";
 import { EventListItem } from "@/components/events/event-list-item";
@@ -57,11 +58,9 @@ export default async function GroupPage({ params }: GroupPageProps) {
           <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">יתרות מול חברים</h2>
 
           {balances.length === 0 ? (
-            <p className="text-neutral-600">אין חברים נוספים בקבוצה לחישוב יתרות</p>
+            <EmptyState title="אין חברים נוספים בקבוצה לחישוב יתרות" />
           ) : !openDebts ? (
-            <p className="rounded-2xl bg-neutral-50 px-4 py-4 text-neutral-700">
-              אין חובות פתוחים בקבוצה כרגע
-            </p>
+            <EmptyState boxed title="אין חובות פתוחים בקבוצה כרגע" />
           ) : (
             <ul className="space-y-3">
               {openBalances.map((balance) => (
@@ -81,7 +80,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
           <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">חברי הקבוצה</h2>
 
           {members.length === 0 ? (
-            <p className="text-neutral-600">אין חברים פעילים בקבוצה</p>
+            <EmptyState title="אין חברים פעילים בקבוצה" />
           ) : (
             <ul className="mb-6 space-y-3">
               {members.map((member) => (
@@ -105,7 +104,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
           <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">הוצאות אחרונות</h2>
 
           {events.length === 0 ? (
-            <p className="text-neutral-600">עדיין לא נוספו הוצאות בקבוצה</p>
+            <EmptyState title="עדיין לא נוספו הוצאות בקבוצה" />
           ) : (
             <ul className="space-y-3">
               {events.map((event) => (
