@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { buildAuthHref } from "@/lib/auth-redirect";
+import { buildAuthHref, getSiteUrl } from "@/lib/auth-redirect";
 import {
   buttonPrimaryClassName,
   errorBoxClassName,
@@ -67,6 +67,9 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
     setInfoMessage(null);
     setLoading(true);
 
+    const siteUrl = getSiteUrl();
+    const emailRedirectTo = `${siteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+
     const supabase = createClient();
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
@@ -76,6 +79,7 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
           display_name: displayName,
           pronoun_preference: pronounPreference,
         },
+        emailRedirectTo,
       },
     });
 
@@ -88,9 +92,7 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
     }
 
     if (!data.session) {
-      setInfoMessage(
-        "נשלח אליכם מייל לאימות החשבון. לאחר האימות תוכלו להצטרף לקבוצה."
-      );
+      setInfoMessage("שלחנו אליך מייל לאימות החשבון. אחרי האימות אפשר להמשיך.");
       return;
     }
 
