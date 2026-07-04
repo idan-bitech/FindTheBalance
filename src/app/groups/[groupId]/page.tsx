@@ -7,15 +7,12 @@ import { FriendBalanceRow } from "@/components/balances/friend-balance-row";
 import { EventListItem } from "@/components/events/event-list-item";
 import { GroupInviteLinks } from "@/components/groups/group-invite-links";
 import { GroupKpiCard } from "@/components/groups/group-kpi-card";
+import { NetKpiAmount } from "@/components/groups/net-kpi-amount";
 import { buttonPrimaryClassName } from "@/lib/ui-classes";
 import { hasOpenDebts } from "@/lib/balance-display";
 import { formatMemberRole } from "@/lib/member-role";
 import { formatILS } from "@/domain/money";
-import {
-  computeGroupKpiTotals,
-  formatContributionPercentText,
-  formatNetKpiText,
-} from "@/lib/group-kpis";
+import { computeGroupKpiTotals, formatContributionPercentText } from "@/lib/group-kpis";
 import { getMyGroupBalances } from "@/server/balances";
 import { getGroupContributionSummary, getGroupEvents } from "@/server/events";
 import { getGroupWithMembers } from "@/server/groups";
@@ -69,7 +66,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <GroupKpiCard label="חייבים לי" value={formatILS(kpiTotals.owedToMeCents)} tone="green" />
             <GroupKpiCard label="אני חייב" value={formatILS(kpiTotals.iOweCents)} tone="amber" />
-            <GroupKpiCard label="נטו" value={formatNetKpiText(kpiTotals.netCents)} tone="stone" />
+            <GroupKpiCard label="נטו" value={<NetKpiAmount netCents={kpiTotals.netCents} />} tone="stone" />
             <GroupKpiCard
               label="התרומה שלי"
               value={formatContributionPercentText(

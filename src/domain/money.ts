@@ -44,18 +44,3 @@ export function formatILS(amountCents: number): string {
     maximumFractionDigits: 0,
   }).format(shekels);
 }
-
-/**
- * Formats a signed amount as "+₪X" / "-₪X" / "₪0", with the sign always
- * immediately before the ₪ symbol — independent of how the he-IL locale
- * would otherwise place a negative sign in currency-style formatting.
- */
-export function formatSignedILS(amountCents: number): string {
-  const sign = amountCents > 0 ? "+" : amountCents < 0 ? "-" : "";
-  const shekels = Math.abs(amountCents) / 100;
-  const formattedNumber = new Intl.NumberFormat("he-IL", {
-    maximumFractionDigits: 0,
-  }).format(shekels);
-
-  return `${sign}₪${formattedNumber}`;
-}

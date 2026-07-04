@@ -1,5 +1,3 @@
-import { formatSignedILS } from "@/domain/money";
-
 export type GroupKpiTotals = {
   owedToMeCents: number;
   iOweCents: number;
@@ -25,10 +23,6 @@ export function computeGroupKpiTotals(
     iOweCents,
     netCents: owedToMeCents - iOweCents,
   };
-}
-
-export function formatNetKpiText(netCents: number): string {
-  return formatSignedILS(netCents);
 }
 
 export function formatContributionPercentText(

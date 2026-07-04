@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 type GroupKpiCardTone = "green" | "amber" | "stone" | "violet";
 
 const toneClasses: Record<GroupKpiCardTone, string> = {
@@ -9,7 +11,7 @@ const toneClasses: Record<GroupKpiCardTone, string> = {
 
 type GroupKpiCardProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   tone: GroupKpiCardTone;
 };
 
