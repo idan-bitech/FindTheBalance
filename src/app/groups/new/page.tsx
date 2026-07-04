@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { LogoutButton } from "@/components/logout-button";
+import { AppShell } from "@/components/app/app-shell";
+import { PageCard } from "@/components/app/page-card";
 import { CreateGroupForm } from "./create-group-form";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,19 +15,12 @@ export default async function NewGroupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-50 px-6 py-10 text-right">
-      <section className="mx-auto w-full max-w-md">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <LogoutButton />
-        </div>
-
-        <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-neutral-200">
-          <h1 className="mb-2 text-3xl font-bold text-neutral-950">יצירת קבוצה חדשה</h1>
-          <p className="mb-8 text-neutral-600">הגדירו שם ותיאור לקבוצה החדשה</p>
-
-          <CreateGroupForm />
-        </div>
-      </section>
-    </main>
+    <AppShell backHref="/dashboard" backLabel="חזרה ללוח הבקרה" maxWidth="md">
+      <PageCard>
+        <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">יצירת קבוצה חדשה</h1>
+        <p className="mb-6 text-neutral-600">הגדירו שם ותיאור לקבוצה החדשה</p>
+        <CreateGroupForm />
+      </PageCard>
+    </AppShell>
   );
 }

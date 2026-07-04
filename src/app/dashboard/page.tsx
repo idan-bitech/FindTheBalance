@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogoutButton } from "@/components/logout-button";
+import { AppShell } from "@/components/app/app-shell";
+import { PageCard, PageSection } from "@/components/app/page-card";
+import { buttonPrimaryClassName } from "@/lib/ui-classes";
 import { createClient } from "@/lib/supabase/server";
 import type { Group } from "@/types/database";
 
@@ -50,51 +52,54 @@ export default async function DashboardPage() {
   const groups = error ? [] : extractGroups(memberships);
 
   return (
-    <main className="min-h-screen bg-neutral-50 px-6 py-10 text-right">
-      <section className="mx-auto w-full max-w-2xl">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <LogoutButton />
-        </div>
-
-        <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-neutral-200">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-3xl font-bold text-neutral-950">הקבוצות שלי</h1>
-            <Link
-              href="/groups/new"
-              className="inline-flex justify-center rounded-full bg-neutral-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800"
-            >
+    <AppShell>
+      <PageSection>
+        <PageCard>
+          <div className="mb-6 flex flex-col gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-950 sm:text-3xl">הקבוצות שלי</h1>
+              <p className="mt-2 text-neutral-600">
+                בחרו קבוצה כדי לראות חובות, הוצאות והתחשבנויות
+              </p>
+            </div>
+            <Link href="/groups/new" className={buttonPrimaryClassName}>
               יצירת קבוצה חדשה
             </Link>
           </div>
 
           {groups.length === 0 ? (
-            <div className="rounded-2xl bg-neutral-50 px-6 py-10 text-center">
+            <div className="rounded-2xl bg-neutral-50 px-5 py-10 text-center">
               <p className="mb-2 text-lg font-semibold text-neutral-900">
-                עדיין אין לכם קבוצות
+                עדיין אין לך קבוצות
               </p>
               <p className="text-neutral-600">
-                צרו קבוצה חדשה כדי להתחיל לנהל התחשבנויות עם חברים
+                צרו קבוצה ראשונה כדי להתחיל לנהל התחשבנויות
               </p>
             </div>
           ) : (
             <ul className="space-y-3">
               {groups.map((group) => (
                 <li key={group.id}>
-                  <Link
-                    href={`/groups/${group.id}`}
-                    className="block rounded-2xl border border-neutral-200 px-5 py-4 transition hover:border-neutral-400 hover:bg-neutral-50"
-                  >
-                    <p className="font-semibold text-neutral-950">{group.name}</p>
-                    {group.description ? (
-                      <p className="mt-1 text-sm text-neutral-600">{group.description}</p>
-                    ) : null}
-                  </Link>
+                  <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-neutral-950">{group.name}</p>
+                      {group.description ? (
+                        <p className="mt-1 text-sm text-neutral-600">{group.description}</p>
+                      ) : null}
+                    </div>
+                    <Link
+                      href={`/groups/${group.id}`}
+                      className={buttonPrimaryClassName}
+                    >
+                      פתיחה
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
-        </div>
-      </section>
-    </main>
+        </PageCard>
+      </PageSection>
+    </AppShell>
   );
 }

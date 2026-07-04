@@ -3,39 +3,61 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { buildAuthHref } from "@/lib/auth-redirect";
+import {
+  buttonPrimaryClassName,
+  errorBoxClassName,
+  infoBoxClassName,
+  inputClassName,
+  labelClassName,
+} from "@/lib/ui-classes";
 import { createClient } from "@/lib/supabase/client";
 
-function getHebrewAuthError(message: string): string {
-  const lower = message.toLowerCase();
+function getHebrewRegisterError(error: { message: string; code?: string }): string {
+  const lower = error.message.toLowerCase();
+  const code = error.code?.toLowerCase() ?? "";
 
-  if (lower.includes("user already registered")) {
-    return "כתובת האימייל כבר רשומה במערכת";
+  if (
+    code === "user_already_exists" ||
+    lower.includes("already registered") ||
+    lower.includes("already been registered") ||
+    lower.includes("user already exists")
+  ) {
+    return "כבר קיים חשבון עם האימייל הזה. התחברו כדי להצטרף לקבוצה.";
   }
-  if (lower.includes("password")) {
-    return "הסיסמה חייבת להיות באורך של לפחות 6 תווים";
+
+  if (lower.includes("weak") || lower.includes("password")) {
+    return "הסיסמה חלשה מדי. בחרו סיסמה ארוכה וחזקה יותר.";
   }
-  if (lower.includes("valid email")) {
-    return "יש להזין כתובת אימייל תקינה";
+
+  if (lower.includes("valid email") || lower.includes("invalid email")) {
+    return "כתובת האימייל לא תקינה.";
   }
 
   return "ההרשמה נכשלה. נסו שוב";
 }
 
-export function RegisterForm() {
+type RegisterFormProps = {
+  redirectTo: string;
+};
+
+export function RegisterForm({ redirectTo }: RegisterFormProps) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setInfoMessage(null);
     setLoading(true);
 
     const supabase = createClient();
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -48,18 +70,26 @@ export function RegisterForm() {
     setLoading(false);
 
     if (signUpError) {
-      setError(getHebrewAuthError(signUpError.message));
+      console.error("signUp failed", signUpError);
+      setError(getHebrewRegisterError(signUpError));
       return;
     }
 
-    router.push("/dashboard");
+    if (!data.session) {
+      setInfoMessage(
+        "נשלח אליכם מייל לאימות החשבון. לאחר האימות תוכלו להצטרף לקבוצה."
+      );
+      return;
+    }
+
+    router.push(redirectTo);
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="displayName" className="mb-1 block text-sm font-medium text-neutral-700">
+        <label htmlFor="displayName" className={labelClassName}>
           שם תצוגה
         </label>
         <input
@@ -69,12 +99,12 @@ export function RegisterForm() {
           autoComplete="name"
           value={displayName}
           onChange={(event) => setDisplayName(event.target.value)}
-          className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-neutral-950 outline-none focus:border-neutral-950"
+          className={inputClassName}
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-neutral-700">
+        <label htmlFor="email" className={labelClassName}>
           אימייל
         </label>
         <input
@@ -84,12 +114,12 @@ export function RegisterForm() {
           autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-neutral-950 outline-none focus:border-neutral-950"
+          className={inputClassName}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-neutral-700">
+        <label htmlFor="password" className={labelClassName}>
           סיסמה
         </label>
         <input
@@ -100,25 +130,36 @@ export function RegisterForm() {
           autoComplete="new-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-neutral-950 outline-none focus:border-neutral-950"
+          className={inputClassName}
         />
       </div>
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      {error ? <p className={errorBoxClassName}>{error}</p> : null}
+
+      {infoMessage ? (
+        <div className={infoBoxClassName}>
+          <p>{infoMessage}</p>
+          <p className="mt-2">
+            <Link
+              href={buildAuthHref("/login", redirectTo)}
+              className="font-semibold text-blue-950 underline"
+            >
+              התחברות
+            </Link>
+          </p>
+        </div>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-full bg-neutral-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className={buttonPrimaryClassName}>
         {loading ? "נרשם..." : "הרשמה"}
       </button>
 
       <p className="text-center text-sm text-neutral-600">
         כבר יש לכם חשבון?{" "}
-        <Link href="/login" className="font-semibold text-neutral-950 underline">
+        <Link
+          href={buildAuthHref("/login", redirectTo)}
+          className="font-semibold text-neutral-950 underline"
+        >
           התחברות
         </Link>
       </p>

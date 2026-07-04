@@ -1,24 +1,23 @@
-import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
+import { PageCard } from "@/components/app/page-card";
+import { PublicPageShell } from "@/components/app/public-page-shell";
+import { getSafeRedirectPath } from "@/lib/auth-redirect";
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{ next?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { next } = await searchParams;
+  const redirectTo = getSafeRedirectPath(next);
+
   return (
-    <main className="min-h-screen bg-neutral-50 px-6 py-10 text-right">
-      <section className="mx-auto w-full max-w-md">
-        <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-neutral-200">
-          <Link
-            href="/"
-            className="mb-6 inline-block text-sm font-medium text-neutral-500 hover:text-neutral-800"
-          >
-            חזרה לדף הבית
-          </Link>
-
-          <h1 className="mb-2 text-3xl font-bold text-neutral-950">התחברות</h1>
-          <p className="mb-8 text-neutral-600">התחברו כדי לנהל את הקבוצות שלכם</p>
-
-          <LoginForm />
-        </div>
-      </section>
-    </main>
+    <PublicPageShell>
+      <PageCard>
+        <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">התחברות</h1>
+        <p className="mb-6 text-neutral-600">התחברו כדי לנהל את הקבוצות שלכם</p>
+        <LoginForm redirectTo={redirectTo} />
+      </PageCard>
+    </PublicPageShell>
   );
 }
