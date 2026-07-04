@@ -78,7 +78,7 @@ export default async function DashboardPage() {
             <EmptyState
               boxed
               title="עדיין אין לך קבוצות"
-              description="צרו קבוצה ראשונה כדי להתחיל לנהל התחשבנויות"
+              description="צרו קבוצה ראשונה ותתחילו לדפוק חשבון"
             />
           ) : (
             <ul className="space-y-4">

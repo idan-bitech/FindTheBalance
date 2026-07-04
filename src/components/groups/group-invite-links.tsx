@@ -2,7 +2,12 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { buttonPrimaryClassName, errorBoxClassName, successBoxClassName } from "@/lib/ui-classes";
+import {
+  buttonPrimaryClassName,
+  buttonSecondaryClassName,
+  errorBoxClassName,
+  successBoxClassName,
+} from "@/lib/ui-classes";
 import { createGroupInviteLinkAction } from "@/server/invites";
 import type { GroupInviteLink } from "@/types/database";
 
@@ -20,87 +25,131 @@ type GroupInviteLinksProps = {
   inviteLinks: GroupInviteLink[];
 };
 
+type StatusMessage = { type: "success" | "error"; text: string };
+
 export function GroupInviteLinks({ groupId, groupName, inviteLinks }: GroupInviteLinksProps) {
   const router = useRouter();
   const origin = useWindowOrigin();
   const [createdToken, setCreatedToken] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(
-    null
-  );
+  const [whatsappPending, setWhatsappPending] = useState(false);
+  const [copyPending, setCopyPending] = useState(false);
+  const [message, setMessage] = useState<StatusMessage | null>(null);
 
-  async function handleSendInvite() {
-    if (pending) {
+  const token = inviteLinks[0]?.token ?? createdToken;
+  const inviteUrl = token ? (origin ? `${origin}/join/${token}` : `/join/${token}`) : null;
+  const whatsappUrl = inviteUrl
+    ? `https://wa.me/?text=${encodeURIComponent(
+        `הקבוצה ${groupName} הזמינה אותך לשחק חיובים:\n${inviteUrl}`
+      )}`
+    : null;
+
+  async function ensureInviteToken(): Promise<string | null> {
+    if (token) {
+      return token;
+    }
+
+    const result = await createGroupInviteLinkAction(
+      groupId,
+      { error: null, success: null, token: null },
+      new FormData()
+    );
+
+    if (result.error || !result.token) {
+      return null;
+    }
+
+    setCreatedToken(result.token);
+    router.refresh();
+    return result.token;
+  }
+
+  async function handlePrepareWhatsapp() {
+    if (whatsappPending || whatsappUrl) {
       return;
     }
 
-    setPending(true);
+    setWhatsappPending(true);
     setMessage(null);
 
-    // Open the tab synchronously, in direct response to the click, so mobile
-    // Safari doesn't treat it as a blocked popup once we `await` below.
-    let whatsappWindow: Window | null = null;
     try {
-      whatsappWindow = window.open("", "_blank", "noopener,noreferrer");
-    } catch {
-      whatsappWindow = null;
-    }
-
-    try {
-      let token = inviteLinks[0]?.token ?? createdToken;
-
-      if (!token) {
-        const result = await createGroupInviteLinkAction(
-          groupId,
-          { error: null, success: null, token: null },
-          new FormData()
-        );
-
-        if (result.error || !result.token) {
-          whatsappWindow?.close();
-          setMessage({ type: "error", text: "לא הצלחנו להכין את ההזמנה" });
-          return;
-        }
-
-        token = result.token;
-        setCreatedToken(token);
-        router.refresh();
-      }
-
-      const inviteUrl = origin ? `${origin}/join/${token}` : `/join/${token}`;
-      const message = `הקבוצה ${groupName} הזמינה אותך לשחק חיובים:\n${inviteUrl}`;
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-      if (whatsappWindow) {
-        whatsappWindow.location.href = whatsappUrl;
-        setMessage({ type: "success", text: "ההזמנה מוכנה לשליחה בוואטסאפ" });
+      const readyToken = await ensureInviteToken();
+      if (!readyToken) {
+        setMessage({ type: "error", text: "לא הצלחנו להכין את ההזמנה" });
         return;
       }
 
-      await navigator.clipboard.writeText(message);
-      setMessage({ type: "success", text: "ההזמנה הועתקה, אפשר להדביק בוואטסאפ" });
+      setMessage({ type: "success", text: "ההזמנה מוכנה לשליחה בוואטסאפ" });
     } catch {
-      whatsappWindow?.close();
       setMessage({ type: "error", text: "לא הצלחנו להכין את ההזמנה" });
     } finally {
-      setPending(false);
+      setWhatsappPending(false);
+    }
+  }
+
+  async function handleCopyLink() {
+    if (copyPending) {
+      return;
+    }
+
+    setCopyPending(true);
+    setMessage(null);
+
+    try {
+      const readyToken = await ensureInviteToken();
+      if (!readyToken) {
+        setMessage({ type: "error", text: "לא הצלחנו להעתיק את הלינק" });
+        return;
+      }
+
+      const url = origin ? `${origin}/join/${readyToken}` : `/join/${readyToken}`;
+      await navigator.clipboard.writeText(url);
+      setMessage({ type: "success", text: "לינק ההזמנה הועתק" });
+    } catch {
+      setMessage({ type: "error", text: "לא הצלחנו להעתיק את הלינק" });
+    } finally {
+      setCopyPending(false);
     }
   }
 
   return (
     <div className="space-y-3">
       <p className="text-sm text-stone-500">
-        שלחו הזמנה לוואטסאפ כדי שחברים יוכלו להצטרף לקבוצה.
+        שלחו הזמנה בוואטסאפ או העתיקו לינק כדי שחברים יוכלו להצטרף לקבוצה.
       </p>
 
-      <button
-        type="button"
-        onClick={handleSendInvite}
-        disabled={pending}
-        className={buttonPrimaryClassName}
-      >
-        {pending ? "שולח..." : "שליחת הזמנה בוואטסאפ"}
-      </button>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        {whatsappUrl ? (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonPrimaryClassName}
+            onClick={() =>
+              setMessage({ type: "success", text: "ההזמנה מוכנה לשליחה בוואטסאפ" })
+            }
+          >
+            שליחה בוואטסאפ
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={handlePrepareWhatsapp}
+            disabled={whatsappPending}
+            className={buttonPrimaryClassName}
+          >
+            {whatsappPending ? "מכין..." : "שליחה בוואטסאפ"}
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={handleCopyLink}
+          disabled={copyPending}
+          className={buttonSecondaryClassName}
+        >
+          {copyPending ? "מעתיק..." : "העתקת לינק"}
+        </button>
+      </div>
 
       {message ? (
         <p className={message.type === "success" ? successBoxClassName : errorBoxClassName}>
