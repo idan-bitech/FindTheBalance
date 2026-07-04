@@ -1,4 +1,4 @@
-import { formatILS } from "@/domain/money";
+import { formatSignedILS } from "@/domain/money";
 
 export type GroupKpiTotals = {
   owedToMeCents: number;
@@ -28,13 +28,7 @@ export function computeGroupKpiTotals(
 }
 
 export function formatNetKpiText(netCents: number): string {
-  if (netCents > 0) {
-    return `לטובתך ${formatILS(netCents)}`;
-  }
-  if (netCents < 0) {
-    return `לחובתך ${formatILS(Math.abs(netCents))}`;
-  }
-  return "מאוזן";
+  return formatSignedILS(netCents);
 }
 
 export function formatContributionPercentText(
