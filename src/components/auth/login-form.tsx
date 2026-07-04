@@ -38,6 +38,9 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loading) {
+      return;
+    }
     setError(null);
     setLoading(true);
 

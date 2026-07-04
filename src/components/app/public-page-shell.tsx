@@ -14,7 +14,7 @@ export function PublicPageShell({
 }: PublicPageShellProps) {
   return (
     <div className="min-h-screen bg-neutral-50 text-right">
-      <header className="border-b border-neutral-200 bg-white">
+      <header className="border-b border-neutral-200 bg-white pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3 sm:max-w-2xl sm:px-6">
           <Link
             href="/"
@@ -25,7 +25,7 @@ export function PublicPageShell({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-md px-4 py-6 sm:max-w-2xl sm:px-6 sm:py-10">
+      <main className="mx-auto w-full max-w-md px-4 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:max-w-2xl sm:px-6 sm:py-10 sm:pb-[calc(2.5rem+env(safe-area-inset-bottom))]">
         {homeHref ? (
           <Link href={homeHref} className={`${linkMutedClassName} mb-6 inline-block`}>
             {homeLabel}

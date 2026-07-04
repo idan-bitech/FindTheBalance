@@ -3,7 +3,7 @@ import { buttonPrimaryClassName, buttonSecondaryClassName } from "@/lib/ui-class
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-neutral-50 px-4 py-8 text-right sm:px-6 sm:py-10">
+    <main className="min-h-screen bg-neutral-50 px-4 py-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))] text-right sm:px-6 sm:py-10">
       <section className="mx-auto flex min-h-[80vh] w-full max-w-3xl flex-col justify-center">
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-neutral-200 sm:rounded-3xl sm:p-8">
           <p className="mb-3 text-sm font-medium text-neutral-500">Friends Balance</p>

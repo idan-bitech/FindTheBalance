@@ -4,6 +4,12 @@ import { useActionState, useEffect, useState, useSyncExternalStore } from "react
 import { useRouter } from "next/navigation";
 import { formatEntryDate } from "@/lib/balance-display";
 import {
+  buttonPrimaryClassName,
+  buttonSecondaryClassName,
+  errorBoxClassName,
+  successBoxClassName,
+} from "@/lib/ui-classes";
+import {
   createGroupInviteLinkAction,
   revokeGroupInviteLinkAction,
   type InviteActionState,
@@ -82,11 +88,7 @@ function InviteLinkCard({
       </dl>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-950 transition hover:bg-neutral-100"
-        >
+        <button type="button" onClick={handleCopy} className={buttonSecondaryClassName}>
           העתקת לינק
         </button>
 
@@ -105,16 +107,10 @@ function InviteLinkCard({
         <p className="mt-3 text-sm text-neutral-600">{copyMessage}</p>
       ) : null}
 
-      {revokeState.error ? (
-        <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
-          {revokeState.error}
-        </p>
-      ) : null}
+      {revokeState.error ? <p className={`mt-3 ${errorBoxClassName}`}>{revokeState.error}</p> : null}
 
       {revokeState.success ? (
-        <p className="mt-3 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
-          {revokeState.success}
-        </p>
+        <p className={`mt-3 ${successBoxClassName}`}>{revokeState.success}</p>
       ) : null}
     </li>
   );
@@ -139,24 +135,14 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
   return (
     <div className="space-y-4">
       <form action={createFormAction}>
-        <button
-          type="submit"
-          disabled={createPending}
-          className="rounded-full bg-neutral-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
-        >
+        <button type="submit" disabled={createPending} className={buttonPrimaryClassName}>
           {createPending ? "יוצר לינק..." : "יצירת לינק הזמנה"}
         </button>
       </form>
 
-      {createState.error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{createState.error}</p>
-      ) : null}
+      {createState.error ? <p className={errorBoxClassName}>{createState.error}</p> : null}
 
-      {createState.success ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
-          {createState.success}
-        </p>
-      ) : null}
+      {createState.success ? <p className={successBoxClassName}>{createState.success}</p> : null}
 
       {showEmptyState ? (
         <p className="text-neutral-600">עדיין לא נוצר לינק הזמנה לקבוצה</p>

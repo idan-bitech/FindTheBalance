@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { buttonPrimaryClassName, errorBoxClassName } from "@/lib/ui-classes";
 import { acceptInviteAction, type AcceptInviteState } from "@/server/invites";
 
 const initialState: AcceptInviteState = { error: null };
@@ -15,15 +16,9 @@ export function JoinAcceptForm({ token }: JoinAcceptFormProps) {
 
   return (
     <form action={formAction} className="space-y-4">
-      {state.error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</p>
-      ) : null}
+      {state.error ? <p className={errorBoxClassName}>{state.error}</p> : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-full bg-neutral-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
-      >
+      <button type="submit" disabled={pending} className={buttonPrimaryClassName}>
         {pending ? "מצטרף..." : "הצטרפות לקבוצה"}
       </button>
     </form>

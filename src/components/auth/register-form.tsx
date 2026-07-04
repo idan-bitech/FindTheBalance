@@ -52,6 +52,9 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loading) {
+      return;
+    }
     setError(null);
     setInfoMessage(null);
     setLoading(true);
