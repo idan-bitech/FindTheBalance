@@ -33,7 +33,7 @@ export function AppShell({
               href="/dashboard"
               className="truncate text-base font-semibold text-neutral-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 rounded"
             >
-              Friends Balance
+              Keep the Balance
             </Link>
             {showLogout ? <LogoutButton /> : null}
           </div>

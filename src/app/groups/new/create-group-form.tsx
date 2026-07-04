@@ -45,7 +45,7 @@ export function CreateGroupForm() {
 
       <p className="text-center text-sm text-neutral-600">
         <Link href="/dashboard" className="font-semibold text-neutral-950 underline">
-          חזרה ללוח הבקרה
+          חזרה למסך הראשי
         </Link>
       </p>
     </form>

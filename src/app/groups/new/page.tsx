@@ -15,7 +15,7 @@ export default async function NewGroupPage() {
   }
 
   return (
-    <AppShell backHref="/dashboard" backLabel="חזרה ללוח הבקרה" maxWidth="md">
+    <AppShell backHref="/dashboard" backLabel="חזרה למסך הראשי" maxWidth="md">
       <PageCard>
         <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">יצירת קבוצה חדשה</h1>
         <p className="mb-6 text-neutral-600">הגדירו שם ותיאור לקבוצה החדשה</p>

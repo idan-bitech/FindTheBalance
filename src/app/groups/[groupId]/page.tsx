@@ -8,6 +8,7 @@ import { EventListItem } from "@/components/events/event-list-item";
 import { GroupInviteLinks } from "@/components/groups/group-invite-links";
 import { buttonPrimaryClassName } from "@/lib/ui-classes";
 import { hasOpenDebts } from "@/lib/balance-display";
+import { formatMemberRole } from "@/lib/member-role";
 import { getMyGroupBalances } from "@/server/balances";
 import { getGroupEvents } from "@/server/events";
 import { getGroupWithMembers } from "@/server/groups";
@@ -40,7 +41,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const openBalances = balances.filter((balance) => balance.netAmountCents !== 0);
 
   return (
-    <AppShell backHref="/dashboard" backLabel="חזרה ללוח הבקרה">
+    <AppShell backHref="/dashboard" backLabel="חזרה למסך הראשי">
       <PageSection>
         <PageCard>
           <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">{group.name}</h1>
@@ -91,7 +92,9 @@ export default async function GroupPage({ params }: GroupPageProps) {
                   <span className="font-medium text-neutral-950">
                     {member.profiles?.display_name ?? "משתמש"}
                   </span>
-                  <span className="shrink-0 text-sm text-neutral-500">{member.role}</span>
+                  <span className="shrink-0 text-sm text-neutral-500">
+                    {formatMemberRole(member.role)}
+                  </span>
                 </li>
               ))}
             </ul>

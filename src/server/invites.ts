@@ -54,6 +54,7 @@ export async function getGroupInviteLinks(groupId: string): Promise<GroupInviteL
 export type InviteActionState = {
   error: string | null;
   success: string | null;
+  token?: string | null;
 };
 
 export async function createGroupInviteLinkAction(
@@ -84,12 +85,25 @@ export async function createGroupInviteLinkAction(
 
   if (error) {
     console.error("createGroupInviteLinkAction failed", error);
-    return { error: "לא הצלחנו ליצור לינק הזמנה. נסו שוב.", success: null };
+    return { error: "לא הצלחנו ליצור לינק הזמנה. נסו שוב.", success: null, token: null };
   }
+
+  const { data: latestLink } = await supabase
+    .from("group_invite_links")
+    .select("token")
+    .eq("group_id", groupId)
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   revalidatePath(`/groups/${groupId}`);
 
-  return { error: null, success: "לינק ההזמנה נוצר בהצלחה" };
+  return {
+    error: null,
+    success: "לינק ההזמנה נוצר בהצלחה",
+    token: latestLink?.token ?? null,
+  };
 }
 
 export async function revokeGroupInviteLinkAction(

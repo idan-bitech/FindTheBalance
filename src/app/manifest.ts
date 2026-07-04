@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Friends Balance",
+    name: "Keep the Balance",
     short_name: "חובות",
     description: "ניהול חובות והתחשבנויות בין חברים",
     start_url: "/dashboard",

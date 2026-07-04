@@ -60,7 +60,7 @@ export default async function DashboardPage() {
             <div>
               <h1 className="text-2xl font-bold text-neutral-950 sm:text-3xl">הקבוצות שלי</h1>
               <p className="mt-2 text-neutral-600">
-                בחרו קבוצה כדי לראות חובות, הוצאות והתחשבנויות
+                בחרו קבוצה כדי לראות את החיובים הפנימיים
               </p>
             </div>
             <Link href="/groups/new" className={buttonPrimaryClassName}>

@@ -1,23 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { EmptyState } from "@/components/app/empty-state";
-import { formatEntryDate } from "@/lib/balance-display";
-import {
-  buttonPrimaryClassName,
-  buttonSecondaryClassName,
-  errorBoxClassName,
-  successBoxClassName,
-} from "@/lib/ui-classes";
-import {
-  createGroupInviteLinkAction,
-  revokeGroupInviteLinkAction,
-  type InviteActionState,
-} from "@/server/invites";
+import { buttonPrimaryClassName, errorBoxClassName, successBoxClassName } from "@/lib/ui-classes";
+import { createGroupInviteLinkAction } from "@/server/invites";
 import type { GroupInviteLink } from "@/types/database";
-
-const initialState: InviteActionState = { error: null, success: null };
 
 function useWindowOrigin() {
   return useSyncExternalStore(
@@ -32,131 +19,72 @@ type GroupInviteLinksProps = {
   inviteLinks: GroupInviteLink[];
 };
 
-function InviteLinkCard({
-  groupId,
-  link,
-}: {
-  groupId: string;
-  link: GroupInviteLink;
-}) {
+export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps) {
   const router = useRouter();
   const origin = useWindowOrigin();
-  const [copyMessage, setCopyMessage] = useState<string | null>(null);
-  const inviteUrl = origin ? `${origin}/join/${link.token}` : `/join/${link.token}`;
-  const revokeAction = revokeGroupInviteLinkAction.bind(null, groupId, link.id);
-  const [revokeState, revokeFormAction, revokePending] = useActionState(
-    revokeAction,
-    initialState
+  const [createdToken, setCreatedToken] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(
+    null
   );
 
-  useEffect(() => {
-    if (revokeState.success) {
-      router.refresh();
+  async function handleCopyInviteLink() {
+    if (pending) {
+      return;
     }
-  }, [revokeState.success, router]);
 
-  async function handleCopy() {
-    setCopyMessage(null);
+    setPending(true);
+    setMessage(null);
 
     try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(inviteUrl);
-        setCopyMessage("הלינק הועתק");
-        return;
-      }
-    } catch {
-      // fall through to fallback
-    }
+      let token = inviteLinks[0]?.token ?? createdToken;
 
-    setCopyMessage(`לא הצלחנו להעתיק אוטומטית. העתיקו ידנית: ${inviteUrl}`);
+      if (!token) {
+        const result = await createGroupInviteLinkAction(
+          groupId,
+          { error: null, success: null, token: null },
+          new FormData()
+        );
+
+        if (result.error || !result.token) {
+          setMessage({ type: "error", text: "לא הצלחנו להעתיק את לינק ההזמנה" });
+          return;
+        }
+
+        token = result.token;
+        setCreatedToken(token);
+        router.refresh();
+      }
+
+      const inviteUrl = origin ? `${origin}/join/${token}` : `/join/${token}`;
+      await navigator.clipboard.writeText(inviteUrl);
+      setMessage({ type: "success", text: "לינק ההזמנה הועתק" });
+    } catch {
+      setMessage({ type: "error", text: "לא הצלחנו להעתיק את לינק ההזמנה" });
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
-    <li className="rounded-2xl border border-neutral-200 p-5">
-      <div className="mb-3 break-all rounded-xl bg-neutral-50 px-4 py-3 text-sm text-neutral-800">
-        {inviteUrl}
-      </div>
-
-      <dl className="mb-4 space-y-2 text-sm text-neutral-600">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <dt>תוקף עד</dt>
-          <dd className="font-medium text-neutral-900">{formatEntryDate(link.expires_at)}</dd>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <dt>שימושים</dt>
-          <dd className="font-medium text-neutral-900">{link.uses_count}</dd>
-        </div>
-      </dl>
-
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <button type="button" onClick={handleCopy} className={buttonSecondaryClassName}>
-          העתקת לינק
-        </button>
-
-        <form action={revokeFormAction}>
-          <button
-            type="submit"
-            disabled={revokePending}
-            className="w-full rounded-full border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-60 sm:w-auto"
-          >
-            {revokePending ? "מבטל..." : "ביטול לינק"}
-          </button>
-        </form>
-      </div>
-
-      {copyMessage ? (
-        <p className="mt-3 text-sm text-neutral-600">{copyMessage}</p>
-      ) : null}
-
-      {revokeState.error ? <p className={`mt-3 ${errorBoxClassName}`}>{revokeState.error}</p> : null}
-
-      {revokeState.success ? (
-        <p className={`mt-3 ${successBoxClassName}`}>{revokeState.success}</p>
-      ) : null}
-    </li>
-  );
-}
-
-export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps) {
-  const router = useRouter();
-  const createAction = createGroupInviteLinkAction.bind(null, groupId);
-  const [createState, createFormAction, createPending] = useActionState(
-    createAction,
-    initialState
-  );
-
-  useEffect(() => {
-    if (createState.success) {
-      router.refresh();
-    }
-  }, [createState.success, router]);
-
-  const showEmptyState = inviteLinks.length === 0 && !createState.success;
-
-  return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <p className="text-sm text-neutral-500">
         צרו לינק ושלחו אותו לחברים כדי שיוכלו להצטרף לקבוצה.
       </p>
 
-      <form action={createFormAction}>
-        <button type="submit" disabled={createPending} className={buttonPrimaryClassName}>
-          {createPending ? "יוצר לינק..." : "יצירת לינק הזמנה"}
-        </button>
-      </form>
+      <button
+        type="button"
+        onClick={handleCopyInviteLink}
+        disabled={pending}
+        className={buttonPrimaryClassName}
+      >
+        {pending ? "מעתיק..." : "העתקת לינק הזמנה"}
+      </button>
 
-      {createState.error ? <p className={errorBoxClassName}>{createState.error}</p> : null}
-
-      {createState.success ? <p className={successBoxClassName}>{createState.success}</p> : null}
-
-      {showEmptyState ? (
-        <EmptyState title="עדיין לא נוצר לינק הזמנה לקבוצה" />
-      ) : inviteLinks.length > 0 ? (
-        <ul className="space-y-3">
-          {inviteLinks.map((link) => (
-            <InviteLinkCard key={link.id} groupId={groupId} link={link} />
-          ))}
-        </ul>
+      {message ? (
+        <p className={message.type === "success" ? successBoxClassName : errorBoxClassName}>
+          {message.text}
+        </p>
       ) : null}
     </div>
   );

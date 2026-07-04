@@ -5,7 +5,7 @@ export default function GroupLoading() {
     <PageLoading
       message="טוען קבוצה..."
       backHref="/dashboard"
-      backLabel="חזרה ללוח הבקרה"
+      backLabel="חזרה למסך הראשי"
     />
   );
 }
