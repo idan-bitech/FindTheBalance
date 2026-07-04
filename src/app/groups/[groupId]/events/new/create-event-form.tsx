@@ -50,20 +50,20 @@ export function CreateEventForm({ groupId, members, defaultDate }: CreateEventFo
 
       <fieldset>
         <legend className={`${labelClassName} mb-2`}>משתתפים</legend>
-        <div className="space-y-2 rounded-xl border border-neutral-200 p-4">
+        <div className="space-y-2 rounded-xl border border-stone-200 p-4">
           {members.map((member) => (
             <label
               key={member.user_id}
-              className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-1 hover:bg-neutral-50"
+              className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-1 hover:bg-stone-50"
             >
               <input
                 type="checkbox"
                 name="participantIds"
                 value={member.user_id}
                 defaultChecked
-                className="h-4 w-4 rounded border-neutral-300"
+                className="h-4 w-4 rounded border-stone-300"
               />
-              <span className="text-neutral-950">
+              <span className="text-stone-950">
                 {member.profiles?.display_name ?? "משתמש"}
               </span>
             </label>
@@ -98,8 +98,8 @@ export function CreateEventForm({ groupId, members, defaultDate }: CreateEventFo
         {pending ? "שומר..." : "שמירת הוצאה"}
       </button>
 
-      <p className="text-center text-sm text-neutral-600">
-        <Link href={`/groups/${groupId}`} className="font-semibold text-neutral-950 underline">
+      <p className="text-center text-sm text-stone-600">
+        <Link href={`/groups/${groupId}`} className="font-semibold text-stone-950 underline">
           חזרה לקבוצה
         </Link>
       </p>

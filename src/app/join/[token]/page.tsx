@@ -19,8 +19,8 @@ export default async function JoinPage({ params }: JoinPageProps) {
     return (
       <PublicPageShell homeHref="/" homeLabel="חזרה לדף הבית">
         <PageCard>
-          <h1 className="mb-4 text-2xl font-bold text-neutral-950">הזמנה לקבוצה</h1>
-          <p className="text-neutral-700">לינק ההזמנה לא תקין או שפג תוקפו</p>
+          <h1 className="mb-4 text-2xl font-bold text-stone-950">הזמנה לקבוצה</h1>
+          <p className="text-stone-700">לינק ההזמנה לא תקין או שפג תוקפו</p>
         </PageCard>
       </PublicPageShell>
     );
@@ -38,10 +38,10 @@ export default async function JoinPage({ params }: JoinPageProps) {
   return (
     <PublicPageShell homeHref="/" homeLabel="חזרה לדף הבית">
       <PageCard>
-        <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">
+        <h1 className="mb-2 text-2xl font-bold text-stone-950 sm:text-3xl">
           הוזמנת להצטרף לקבוצה
         </h1>
-        <p className="mb-6 text-lg text-neutral-700">{preview.group_name}</p>
+        <p className="mb-6 text-lg text-stone-700">{preview.group_name}</p>
 
         {user ? (
           <JoinAcceptForm token={token} />

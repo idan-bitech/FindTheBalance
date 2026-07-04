@@ -25,13 +25,13 @@ export function AppShell({
   const widthClass = maxWidthClasses[maxWidth];
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-right">
-      <header className="sticky top-0 z-20 border-b border-neutral-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <div className="min-h-screen bg-stone-50 text-right">
+      <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-white/80">
         <div className={`mx-auto flex w-full ${widthClass} flex-col gap-2 px-4 py-3 sm:px-6`}>
           <div className="flex items-center justify-between gap-3">
             <Link
               href="/dashboard"
-              className="truncate text-base font-semibold text-neutral-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 rounded"
+              className="truncate text-base font-semibold text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded"
             >
               Keep the Balance
             </Link>

@@ -51,7 +51,7 @@ export default function RootLayout({
       dir="rtl"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-neutral-50 text-neutral-950">
+      <body className="flex min-h-full flex-col bg-stone-50 text-stone-950">
         {children}
       </body>
     </html>

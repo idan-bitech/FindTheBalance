@@ -25,7 +25,7 @@ export function AddMemberForm({ groupId }: AddMemberFormProps) {
       <label htmlFor="email" className={labelClassName}>
         הוספת חבר לפי אימייל
       </label>
-      <p className="mb-2 text-sm text-neutral-500">
+      <p className="mb-2 text-sm text-stone-500">
         המשתמש צריך להיות רשום במערכת כדי להוסיף אותו ישירות.
       </p>
       <div className="flex flex-col gap-3 sm:flex-row">

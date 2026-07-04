@@ -40,12 +40,12 @@ export default async function PairDetailPage({ params }: PairDetailPageProps) {
     <AppShell backHref={`/groups/${groupId}`} backLabel={`חזרה ל${groupData.group.name}`}>
       <PageSection>
         <PageCard>
-          <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">{friendName}</h1>
-          <p className="text-lg font-medium text-neutral-950">
+          <h1 className="mb-2 text-2xl font-bold text-stone-950 sm:text-3xl">{friendName}</h1>
+          <p className="text-lg font-medium text-stone-950">
             {formatPairSummaryMain(friendName, netAmountCents)}
           </p>
           {summarySecondary ? (
-            <p className="mt-2 text-neutral-600">{summarySecondary}</p>
+            <p className="mt-2 text-stone-600">{summarySecondary}</p>
           ) : null}
         </PageCard>
 
@@ -61,7 +61,7 @@ export default async function PairDetailPage({ params }: PairDetailPageProps) {
         )}
 
         <PageCard>
-          <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">היסטוריית התחשבנות</h2>
+          <h2 className="mb-4 text-lg font-bold text-stone-950 sm:text-xl">היסטוריית התחשבנות</h2>
           <PairLedgerTimeline
             entries={entries}
             currentUserId={groupData.currentUserId}

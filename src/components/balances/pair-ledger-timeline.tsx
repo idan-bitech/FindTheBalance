@@ -37,17 +37,17 @@ export function PairLedgerTimeline({
         return (
           <li
             key={entry.id}
-            className="rounded-2xl border border-neutral-200 px-5 py-4"
+            className="rounded-2xl border border-stone-200 px-5 py-4"
           >
             <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-sm text-neutral-500">
+              <span className="text-sm text-stone-500">
                 {formatEntryDate(entry.created_at)}
               </span>
-              <span className="text-sm font-medium text-neutral-700">
+              <span className="text-sm font-medium text-stone-700">
                 {formatLedgerSourceType(entry.source_type)}
               </span>
             </div>
-            <p className="font-medium text-neutral-950">
+            <p className="font-medium text-stone-950">
               {formatLedgerEntryDescription({
                 entry,
                 currentUserId,
@@ -55,7 +55,7 @@ export function PairLedgerTimeline({
               })}
             </p>
             {settlementDirection ? (
-              <p className="mt-1 text-sm text-neutral-600">{settlementDirection}</p>
+              <p className="mt-1 text-sm text-stone-600">{settlementDirection}</p>
             ) : null}
           </li>
         );

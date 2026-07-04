@@ -186,6 +186,22 @@ function mapEventRow(event: EventRow): EventWithPayer {
   };
 }
 
+const RECENT_EVENTS_DISPLAY_LIMIT = 20;
+const RECENT_EVENTS_FETCH_LIMIT = 100;
+
+function isEventVisibleToUser(event: EventRow, userId: string): boolean {
+  if (event.paid_by_user_id === userId || event.created_by === userId) {
+    return true;
+  }
+
+  const participants = event.event_participants;
+  if (Array.isArray(participants)) {
+    return participants.some((participant) => participant.user_id === userId);
+  }
+
+  return participants?.user_id === userId;
+}
+
 export async function getGroupEvents(groupId: string): Promise<EventWithPayer[]> {
   const supabase = await createClient();
   const {
@@ -224,13 +240,51 @@ export async function getGroupEvents(groupId: string): Promise<EventWithPayer[]>
     .eq("group_id", groupId)
     .order("event_date", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(RECENT_EVENTS_FETCH_LIMIT);
 
   if (error || !events) {
     return [];
   }
 
-  return (events as EventRow[]).map(mapEventRow);
+  const visibleEvents = (events as EventRow[]).filter((event) =>
+    isEventVisibleToUser(event, user.id)
+  );
+
+  return visibleEvents.slice(0, RECENT_EVENTS_DISPLAY_LIMIT).map(mapEventRow);
+}
+
+export type GroupContributionSummary = {
+  myPaidAmountCents: number;
+  totalGroupExpensesCents: number;
+};
+
+export async function getGroupContributionSummary(
+  groupId: string,
+  userId: string
+): Promise<GroupContributionSummary> {
+  const supabase = await createClient();
+
+  const { data: activeEvents, error } = await supabase
+    .from("events")
+    .select("total_amount_cents, paid_by_user_id")
+    .eq("group_id", groupId)
+    .eq("status", "active");
+
+  if (error || !activeEvents) {
+    return { myPaidAmountCents: 0, totalGroupExpensesCents: 0 };
+  }
+
+  let myPaidAmountCents = 0;
+  let totalGroupExpensesCents = 0;
+
+  for (const event of activeEvents) {
+    totalGroupExpensesCents += event.total_amount_cents;
+    if (event.paid_by_user_id === userId) {
+      myPaidAmountCents += event.total_amount_cents;
+    }
+  }
+
+  return { myPaidAmountCents, totalGroupExpensesCents };
 }
 
 export async function getEventDetail(

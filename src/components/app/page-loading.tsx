@@ -17,7 +17,7 @@ export function PageLoading({
 }: PageLoadingProps) {
   const content = (
     <PageCard>
-      <p className="text-center text-neutral-600" role="status" aria-live="polite">
+      <p className="text-center text-stone-600" role="status" aria-live="polite">
         {message}
       </p>
     </PageCard>

@@ -7,10 +7,13 @@ export type Group = {
   created_at: string;
 };
 
+export type PronounPreference = "masculine" | "feminine" | "neutral";
+
 export type Profile = {
   id: string;
   display_name: string | null;
   email?: string | null;
+  pronoun_preference?: PronounPreference | null;
 };
 
 export type GroupMemberWithProfile = {

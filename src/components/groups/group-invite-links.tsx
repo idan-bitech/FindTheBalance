@@ -68,7 +68,7 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-stone-500">
         צרו לינק ושלחו אותו לחברים כדי שיוכלו להצטרף לקבוצה.
       </p>
 

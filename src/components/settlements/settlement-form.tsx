@@ -34,8 +34,8 @@ export function SettlementForm({
 
   return (
     <PageCard>
-      <h2 className="mb-2 text-lg font-bold text-neutral-950 sm:text-xl">סגירת חוב</h2>
-      <p className="mb-6 text-neutral-700">{formatPairSummaryMain(friendName, netAmountCents)}</p>
+      <h2 className="mb-2 text-lg font-bold text-stone-950 sm:text-xl">סגירת חוב</h2>
+      <p className="mb-6 text-stone-700">{formatPairSummaryMain(friendName, netAmountCents)}</p>
 
       <form action={formAction} className="space-y-4">
         <div>

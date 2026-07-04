@@ -38,50 +38,50 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
       <PageSection>
         <PageCard>
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold text-neutral-950 sm:text-3xl">{event.title}</h1>
+            <h1 className="text-2xl font-bold text-stone-950 sm:text-3xl">{event.title}</h1>
             {isCancelled ? (
-              <span className="rounded-full bg-neutral-200 px-3 py-1 text-sm font-medium text-neutral-700">
+              <span className="rounded-full bg-stone-200 px-3 py-1 text-sm font-medium text-stone-700">
                 הוצאה מבוטלת
               </span>
             ) : null}
           </div>
 
-          <p className="mb-1 text-2xl font-bold text-neutral-950">
+          <p className="mb-1 text-2xl font-bold text-stone-950">
             {formatILS(event.total_amount_cents)}
           </p>
-          <p className="mb-4 text-neutral-600">{formatEntryDate(event.event_date)}</p>
+          <p className="mb-4 text-stone-600">{formatEntryDate(event.event_date)}</p>
 
           {isCancelled ? (
-            <p className="rounded-2xl bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+            <p className="rounded-2xl bg-stone-50 px-4 py-3 text-sm text-stone-700">
               ההוצאה נשמרה בהיסטוריה אך אינה משפיעה על היתרות.
             </p>
           ) : null}
 
           {event.description ? (
-            <p className="mt-4 text-neutral-600">{event.description}</p>
+            <p className="mt-4 text-stone-600">{event.description}</p>
           ) : null}
         </PageCard>
 
         <PageCard>
-          <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">פרטים</h2>
+          <h2 className="mb-4 text-lg font-bold text-stone-950 sm:text-xl">פרטים</h2>
           <dl className="space-y-4">
             <div>
-              <dt className="text-sm text-neutral-500">שילם</dt>
-              <dd className="font-medium text-neutral-950">שולם על ידי {payerName}</dd>
+              <dt className="text-sm text-stone-500">שילם</dt>
+              <dd className="font-medium text-stone-950">שולם על ידי {payerName}</dd>
             </div>
             <div>
-              <dt className="mb-2 text-sm text-neutral-500">משתתפים</dt>
+              <dt className="mb-2 text-sm text-stone-500">משתתפים</dt>
               <dd>
                 <ul className="space-y-2">
                   {event.participants.map((participant) => (
                     <li
                       key={participant.user_id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 px-4 py-3"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 px-4 py-3"
                     >
-                      <span className="text-neutral-950">
+                      <span className="text-stone-950">
                         {participant.profile?.display_name ?? "משתמש"}
                       </span>
-                      <span className="shrink-0 text-sm font-medium text-neutral-700">
+                      <span className="shrink-0 text-sm font-medium text-stone-700">
                         {formatILS(participant.share_amount_cents)}
                       </span>
                     </li>
@@ -93,7 +93,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         </PageCard>
 
         <PageCard>
-          <h2 className="mb-4 text-lg font-bold text-neutral-950 sm:text-xl">השפעה על יתרות</h2>
+          <h2 className="mb-4 text-lg font-bold text-stone-950 sm:text-xl">השפעה על יתרות</h2>
 
           {nonPayerEntries.length === 0 ? (
             <EmptyState title="אין השפעה על יתרות בין חברים" />
@@ -110,8 +110,8 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                     key={entry.id}
                     className={`rounded-xl border px-4 py-3 ${
                       entry.is_void
-                        ? "border-neutral-200 bg-neutral-50 text-neutral-500 line-through"
-                        : "border-neutral-200"
+                        ? "border-stone-200 bg-stone-50 text-stone-500 line-through"
+                        : "border-stone-200"
                     }`}
                   >
                     {participantName} חייב ל{payerName} {formatILS(entry.amount_cents)}

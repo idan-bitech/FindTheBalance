@@ -12,6 +12,13 @@ import {
   labelClassName,
 } from "@/lib/ui-classes";
 import { createClient } from "@/lib/supabase/client";
+import type { PronounPreference } from "@/types/database";
+
+const pronounOptions: { value: PronounPreference; label: string }[] = [
+  { value: "masculine", label: "זכר" },
+  { value: "feminine", label: "נקבה" },
+  { value: "neutral", label: "ללא העדפה" },
+];
 
 function getHebrewRegisterError(error: { message: string; code?: string }): string {
   const lower = error.message.toLowerCase();
@@ -46,6 +53,7 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [pronounPreference, setPronounPreference] = useState<PronounPreference>("neutral");
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,6 +74,7 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
       options: {
         data: {
           display_name: displayName,
+          pronoun_preference: pronounPreference,
         },
       },
     });
@@ -137,6 +146,35 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
         />
       </div>
 
+      <div>
+        <span className={labelClassName}>לשון פנייה</span>
+        <div className="flex flex-wrap gap-2">
+          {pronounOptions.map((option) => {
+            const isSelected = pronounPreference === option.value;
+            return (
+              <label
+                key={option.value}
+                className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition ${
+                  isSelected
+                    ? "border-stone-950 bg-stone-950 text-white"
+                    : "border-stone-300 bg-white text-stone-700 hover:bg-stone-50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="pronounPreference"
+                  value={option.value}
+                  checked={isSelected}
+                  onChange={() => setPronounPreference(option.value)}
+                  className="sr-only"
+                />
+                {option.label}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
       {error ? <p className={errorBoxClassName}>{error}</p> : null}
 
       {infoMessage ? (
@@ -157,11 +195,11 @@ export function RegisterForm({ redirectTo }: RegisterFormProps) {
         {loading ? "נרשם..." : "הרשמה"}
       </button>
 
-      <p className="text-center text-sm text-neutral-600">
+      <p className="text-center text-sm text-stone-600">
         כבר יש לכם חשבון?{" "}
         <Link
           href={buildAuthHref("/login", redirectTo)}
-          className="font-semibold text-neutral-950 underline"
+          className="font-semibold text-stone-950 underline"
         >
           התחברות
         </Link>

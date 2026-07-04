@@ -14,8 +14,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <PublicPageShell>
       <PageCard>
-        <h1 className="mb-2 text-2xl font-bold text-neutral-950 sm:text-3xl">התחברות</h1>
-        <p className="mb-6 text-neutral-600">התחברו כדי להמשיך לקבוצות ולהתחשבנויות שלכם</p>
+        <h1 className="mb-2 text-2xl font-bold text-stone-950 sm:text-3xl">התחברות</h1>
+        <p className="mb-6 text-stone-600">התחברו כדי להמשיך לקבוצות ולהתחשבנויות שלכם</p>
         <LoginForm redirectTo={redirectTo} />
       </PageCard>
     </PublicPageShell>

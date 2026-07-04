@@ -99,11 +99,11 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         {loading ? "מתחבר..." : "התחברות"}
       </button>
 
-      <p className="text-center text-sm text-neutral-600">
+      <p className="text-center text-sm text-stone-600">
         אין לכם חשבון?{" "}
         <Link
           href={buildAuthHref("/register", redirectTo)}
-          className="font-semibold text-neutral-950 underline"
+          className="font-semibold text-stone-950 underline"
         >
           הרשמה
         </Link>

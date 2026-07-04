@@ -14,13 +14,18 @@ export function FriendBalanceRow({
   displayName,
   netAmountCents,
 }: FriendBalanceRowProps) {
+  const isOwedToMe = netAmountCents > 0;
+  const toneClassName = isOwedToMe
+    ? "border-emerald-200 bg-emerald-50/60 hover:border-emerald-300 hover:bg-emerald-50"
+    : "border-amber-200 bg-amber-50/60 hover:border-amber-300 hover:bg-amber-50";
+
   return (
     <li>
       <Link
         href={`/groups/${groupId}/friends/${userId}`}
-        className="block rounded-2xl border border-neutral-200 px-5 py-3 transition hover:border-neutral-400 hover:bg-neutral-50"
+        className={`block rounded-2xl border px-5 py-3 transition ${toneClassName}`}
       >
-        <p className="font-medium text-neutral-950">
+        <p className="font-medium text-stone-950">
           {formatBalanceMainText(displayName, netAmountCents)}
         </p>
       </Link>

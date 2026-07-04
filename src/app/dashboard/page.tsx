@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app/app-shell";
 import { EmptyState } from "@/components/app/empty-state";
 import { PageCard, PageSection } from "@/components/app/page-card";
 import { buttonPrimaryClassName } from "@/lib/ui-classes";
+import { welcomeGreeting } from "@/lib/hebrew-copy";
 import { createClient } from "@/lib/supabase/server";
 import type { Group } from "@/types/database";
 
@@ -33,6 +34,12 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, pronoun_preference")
+    .eq("id", user.id)
+    .maybeSingle();
+
   const { data: memberships, error } = await supabase
     .from("group_members")
     .select(
@@ -58,8 +65,12 @@ export default async function DashboardPage() {
         <PageCard>
           <div className="mb-6 flex flex-col gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-neutral-950 sm:text-3xl">הקבוצות שלי</h1>
-              <p className="mt-2 text-neutral-600">
+              <p className="mb-1 text-sm font-semibold text-amber-700">
+                {welcomeGreeting(profile?.pronoun_preference)}
+                {profile?.display_name ? `, ${profile.display_name}` : ""}
+              </p>
+              <h1 className="text-2xl font-bold text-stone-950 sm:text-3xl">הקבוצות שלי</h1>
+              <p className="mt-2 text-stone-600">
                 בחרו קבוצה כדי לראות את החיובים הפנימיים
               </p>
             </div>
@@ -78,11 +89,11 @@ export default async function DashboardPage() {
             <ul className="space-y-3">
               {groups.map((group) => (
                 <li key={group.id}>
-                  <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
-                      <p className="font-semibold text-neutral-950">{group.name}</p>
+                      <p className="font-semibold text-stone-950">{group.name}</p>
                       {group.description ? (
-                        <p className="mt-1 text-sm text-neutral-600">{group.description}</p>
+                        <p className="mt-1 text-sm text-stone-600">{group.description}</p>
                       ) : null}
                     </div>
                     <Link

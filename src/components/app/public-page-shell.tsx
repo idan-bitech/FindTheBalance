@@ -13,12 +13,12 @@ export function PublicPageShell({
   homeLabel = "חזרה לדף הבית",
 }: PublicPageShellProps) {
   return (
-    <div className="min-h-screen bg-neutral-50 text-right">
-      <header className="border-b border-neutral-200 bg-white pt-[env(safe-area-inset-top)]">
+    <div className="min-h-screen bg-stone-50 text-right">
+      <header className="border-b border-stone-200 bg-white pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3 sm:max-w-2xl sm:px-6">
           <Link
             href="/"
-            className="text-base font-semibold text-neutral-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 rounded"
+            className="text-base font-semibold text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded"
           >
             Keep the Balance
           </Link>
