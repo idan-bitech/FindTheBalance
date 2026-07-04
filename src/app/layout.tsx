@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Keep the Balance",
+  title: "Find The Balance",
   description: "ניהול חובות והתחשבנויות בין חברים",
-  applicationName: "Keep the Balance",
+  applicationName: "Find The Balance",
   appleWebApp: {
     capable: true,
-    title: "Keep the Balance",
+    title: "Find The Balance",
     statusBarStyle: "default",
   },
   icons: {

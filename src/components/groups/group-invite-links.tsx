@@ -16,10 +16,11 @@ function useWindowOrigin() {
 
 type GroupInviteLinksProps = {
   groupId: string;
+  groupName: string;
   inviteLinks: GroupInviteLink[];
 };
 
-export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps) {
+export function GroupInviteLinks({ groupId, groupName, inviteLinks }: GroupInviteLinksProps) {
   const router = useRouter();
   const origin = useWindowOrigin();
   const [createdToken, setCreatedToken] = useState<string | null>(null);
@@ -28,13 +29,22 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
     null
   );
 
-  async function handleCopyInviteLink() {
+  async function handleSendInvite() {
     if (pending) {
       return;
     }
 
     setPending(true);
     setMessage(null);
+
+    // Open the tab synchronously, in direct response to the click, so mobile
+    // Safari doesn't treat it as a blocked popup once we `await` below.
+    let whatsappWindow: Window | null = null;
+    try {
+      whatsappWindow = window.open("", "_blank", "noopener,noreferrer");
+    } catch {
+      whatsappWindow = null;
+    }
 
     try {
       let token = inviteLinks[0]?.token ?? createdToken;
@@ -47,7 +57,8 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
         );
 
         if (result.error || !result.token) {
-          setMessage({ type: "error", text: "לא הצלחנו להעתיק את לינק ההזמנה" });
+          whatsappWindow?.close();
+          setMessage({ type: "error", text: "לא הצלחנו להכין את ההזמנה" });
           return;
         }
 
@@ -57,10 +68,20 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
       }
 
       const inviteUrl = origin ? `${origin}/join/${token}` : `/join/${token}`;
-      await navigator.clipboard.writeText(inviteUrl);
-      setMessage({ type: "success", text: "לינק ההזמנה הועתק" });
+      const message = `הקבוצה ${groupName} הזמינה אותך לשחק חיובים:\n${inviteUrl}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+      if (whatsappWindow) {
+        whatsappWindow.location.href = whatsappUrl;
+        setMessage({ type: "success", text: "ההזמנה מוכנה לשליחה בוואטסאפ" });
+        return;
+      }
+
+      await navigator.clipboard.writeText(message);
+      setMessage({ type: "success", text: "ההזמנה הועתקה, אפשר להדביק בוואטסאפ" });
     } catch {
-      setMessage({ type: "error", text: "לא הצלחנו להעתיק את לינק ההזמנה" });
+      whatsappWindow?.close();
+      setMessage({ type: "error", text: "לא הצלחנו להכין את ההזמנה" });
     } finally {
       setPending(false);
     }
@@ -69,16 +90,16 @@ export function GroupInviteLinks({ groupId, inviteLinks }: GroupInviteLinksProps
   return (
     <div className="space-y-3">
       <p className="text-sm text-stone-500">
-        צרו לינק ושלחו אותו לחברים כדי שיוכלו להצטרף לקבוצה.
+        שלחו הזמנה לוואטסאפ כדי שחברים יוכלו להצטרף לקבוצה.
       </p>
 
       <button
         type="button"
-        onClick={handleCopyInviteLink}
+        onClick={handleSendInvite}
         disabled={pending}
         className={buttonPrimaryClassName}
       >
-        {pending ? "מעתיק..." : "העתקת לינק הזמנה"}
+        {pending ? "שולח..." : "שליחת הזמנה בוואטסאפ"}
       </button>
 
       {message ? (

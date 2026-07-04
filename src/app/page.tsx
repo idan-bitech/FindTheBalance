@@ -6,7 +6,10 @@ export default function Home() {
     <main className="min-h-screen bg-stone-50 px-4 py-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))] text-right sm:px-6 sm:py-10">
       <section className="mx-auto flex min-h-[80vh] w-full max-w-3xl flex-col justify-center">
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200 sm:rounded-3xl sm:p-8">
-          <p className="mb-3 text-sm font-semibold text-amber-700">Keep the Balance</p>
+          <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-amber-700">
+            <span aria-hidden="true">⚖️</span>
+            <span>Find The Balance</span>
+          </p>
 
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
             פשוט לשחק חיובים עם חברים

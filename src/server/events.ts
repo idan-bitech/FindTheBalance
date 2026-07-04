@@ -253,40 +253,6 @@ export async function getGroupEvents(groupId: string): Promise<EventWithPayer[]>
   return visibleEvents.slice(0, RECENT_EVENTS_DISPLAY_LIMIT).map(mapEventRow);
 }
 
-export type GroupContributionSummary = {
-  myPaidAmountCents: number;
-  totalGroupExpensesCents: number;
-};
-
-export async function getGroupContributionSummary(
-  groupId: string,
-  userId: string
-): Promise<GroupContributionSummary> {
-  const supabase = await createClient();
-
-  const { data: activeEvents, error } = await supabase
-    .from("events")
-    .select("total_amount_cents, paid_by_user_id")
-    .eq("group_id", groupId)
-    .eq("status", "active");
-
-  if (error || !activeEvents) {
-    return { myPaidAmountCents: 0, totalGroupExpensesCents: 0 };
-  }
-
-  let myPaidAmountCents = 0;
-  let totalGroupExpensesCents = 0;
-
-  for (const event of activeEvents) {
-    totalGroupExpensesCents += event.total_amount_cents;
-    if (event.paid_by_user_id === userId) {
-      myPaidAmountCents += event.total_amount_cents;
-    }
-  }
-
-  return { myPaidAmountCents, totalGroupExpensesCents };
-}
-
 export async function getEventDetail(
   groupId: string,
   eventId: string

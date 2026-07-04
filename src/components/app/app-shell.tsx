@@ -31,9 +31,10 @@ export function AppShell({
           <div className="flex items-center justify-between gap-3">
             <Link
               href="/dashboard"
-              className="truncate text-base font-semibold text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded"
+              className="flex items-center gap-1.5 truncate text-base font-semibold text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded"
             >
-              Keep the Balance
+              <span aria-hidden="true">⚖️</span>
+              <span className="truncate">Find The Balance</span>
             </Link>
             {showLogout ? <LogoutButton /> : null}
           </div>

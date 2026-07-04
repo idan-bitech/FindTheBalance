@@ -18,9 +18,10 @@ export function PublicPageShell({
         <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3 sm:max-w-2xl sm:px-6">
           <Link
             href="/"
-            className="text-base font-semibold text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded"
+            className="flex items-center gap-1.5 text-base font-semibold text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 rounded"
           >
-            Keep the Balance
+            <span aria-hidden="true">⚖️</span>
+            <span>Find The Balance</span>
           </Link>
         </div>
       </header>

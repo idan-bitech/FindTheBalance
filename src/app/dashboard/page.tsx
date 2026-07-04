@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
 import { EmptyState } from "@/components/app/empty-state";
 import { PageCard, PageSection } from "@/components/app/page-card";
-import { buttonPrimaryClassName } from "@/lib/ui-classes";
+import { buttonPrimaryClassName, buttonSecondaryClassName } from "@/lib/ui-classes";
 import { welcomeGreeting } from "@/lib/hebrew-copy";
 import { createClient } from "@/lib/supabase/server";
 import type { Group } from "@/types/database";
@@ -63,20 +63,15 @@ export default async function DashboardPage() {
     <AppShell>
       <PageSection>
         <PageCard>
-          <div className="mb-6 flex flex-col gap-4">
-            <div>
-              <p className="mb-1 text-sm font-semibold text-amber-700">
-                {welcomeGreeting(profile?.pronoun_preference)}
-                {profile?.display_name ? `, ${profile.display_name}` : ""}
-              </p>
-              <h1 className="text-2xl font-bold text-stone-950 sm:text-3xl">הקבוצות שלי</h1>
-              <p className="mt-2 text-stone-600">
-                בחרו קבוצה כדי לראות את החיובים הפנימיים
-              </p>
-            </div>
-            <Link href="/groups/new" className={buttonPrimaryClassName}>
-              יצירת קבוצה חדשה
-            </Link>
+          <div className="mb-8">
+            <p className="mb-1 text-sm font-semibold text-amber-700">
+              {welcomeGreeting(profile?.pronoun_preference)}
+              {profile?.display_name ? `, ${profile.display_name}` : ""}
+            </p>
+            <h1 className="text-2xl font-bold text-stone-950 sm:text-3xl">הקבוצות שלי</h1>
+            <p className="mt-2 text-stone-600">
+              בחרו קבוצה כדי לראות את החיובים הפנימיים
+            </p>
           </div>
 
           {groups.length === 0 ? (
@@ -86,7 +81,7 @@ export default async function DashboardPage() {
               description="צרו קבוצה ראשונה כדי להתחיל לנהל התחשבנויות"
             />
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {groups.map((group) => (
                 <li key={group.id}>
                   <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -107,6 +102,10 @@ export default async function DashboardPage() {
               ))}
             </ul>
           )}
+
+          <Link href="/groups/new" className={`mt-6 ${buttonSecondaryClassName}`}>
+            יצירת קבוצה חדשה
+          </Link>
         </PageCard>
       </PageSection>
     </AppShell>

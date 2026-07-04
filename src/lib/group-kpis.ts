@@ -1,7 +1,6 @@
 export type GroupKpiTotals = {
   owedToMeCents: number;
   iOweCents: number;
-  netCents: number;
 };
 
 export function computeGroupKpiTotals(
@@ -18,21 +17,5 @@ export function computeGroupKpiTotals(
     }
   }
 
-  return {
-    owedToMeCents,
-    iOweCents,
-    netCents: owedToMeCents - iOweCents,
-  };
-}
-
-export function formatContributionPercentText(
-  myPaidAmountCents: number,
-  totalGroupExpensesCents: number
-): string {
-  if (totalGroupExpensesCents === 0) {
-    return "אין נתונים עדיין";
-  }
-
-  const percent = Math.round((myPaidAmountCents / totalGroupExpensesCents) * 100);
-  return `${percent}%`;
+  return { owedToMeCents, iOweCents };
 }

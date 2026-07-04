@@ -7,14 +7,13 @@ import { FriendBalanceRow } from "@/components/balances/friend-balance-row";
 import { EventListItem } from "@/components/events/event-list-item";
 import { GroupInviteLinks } from "@/components/groups/group-invite-links";
 import { GroupKpiCard } from "@/components/groups/group-kpi-card";
-import { NetKpiAmount } from "@/components/groups/net-kpi-amount";
 import { buttonPrimaryClassName } from "@/lib/ui-classes";
 import { hasOpenDebts } from "@/lib/balance-display";
 import { formatMemberRole } from "@/lib/member-role";
 import { formatILS } from "@/domain/money";
-import { computeGroupKpiTotals, formatContributionPercentText } from "@/lib/group-kpis";
+import { computeGroupKpiTotals } from "@/lib/group-kpis";
 import { getMyGroupBalances } from "@/server/balances";
-import { getGroupContributionSummary, getGroupEvents } from "@/server/events";
+import { getGroupEvents } from "@/server/events";
 import { getGroupWithMembers } from "@/server/groups";
 import { getGroupInviteLinks } from "@/server/invites";
 import { AddMemberForm } from "./add-member-form";
@@ -35,11 +34,10 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const currentMember = members.find((member) => member.user_id === currentUserId);
   const isAdmin = currentMember?.role === "admin";
 
-  const [events, balances, inviteLinks, contribution] = await Promise.all([
+  const [events, balances, inviteLinks] = await Promise.all([
     getGroupEvents(groupId),
     getMyGroupBalances(groupId),
     isAdmin ? getGroupInviteLinks(groupId) : Promise.resolve([]),
-    getGroupContributionSummary(groupId, currentUserId),
   ]);
 
   const openDebts = hasOpenDebts(balances);
@@ -63,18 +61,9 @@ export default async function GroupPage({ params }: GroupPageProps) {
 
         <PageCard>
           <h2 className="mb-4 text-lg font-bold text-stone-950 sm:text-xl">הסיכום שלי בקבוצה</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3">
             <GroupKpiCard label="חייבים לי" value={formatILS(kpiTotals.owedToMeCents)} tone="green" />
             <GroupKpiCard label="אני חייב" value={formatILS(kpiTotals.iOweCents)} tone="amber" />
-            <GroupKpiCard label="נטו" value={<NetKpiAmount netCents={kpiTotals.netCents} />} tone="stone" />
-            <GroupKpiCard
-              label="התרומה שלי"
-              value={formatContributionPercentText(
-                contribution.myPaidAmountCents,
-                contribution.totalGroupExpensesCents
-              )}
-              tone="violet"
-            />
           </div>
         </PageCard>
 
@@ -143,7 +132,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
         {isAdmin ? (
           <PageCard subdued>
             <h2 className="mb-4 text-lg font-bold text-stone-950">הזמנה לקבוצה</h2>
-            <GroupInviteLinks groupId={groupId} inviteLinks={inviteLinks} />
+            <GroupInviteLinks groupId={groupId} groupName={group.name} inviteLinks={inviteLinks} />
           </PageCard>
         ) : null}
       </PageSection>

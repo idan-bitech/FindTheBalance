@@ -25,5 +25,5 @@ export function PageSection({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <div className={`space-y-6 ${className}`}>{children}</div>;
+  return <div className={`space-y-8 ${className}`}>{children}</div>;
 }
