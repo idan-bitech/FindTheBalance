@@ -34,28 +34,29 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, pronoun_preference")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const { data: memberships, error } = await supabase
-    .from("group_members")
-    .select(
+  const [{ data: profile }, { data: memberships, error }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("display_name, pronoun_preference")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("group_members")
+      .select(
+        `
+        groups (
+          id,
+          name,
+          description,
+          currency,
+          created_by,
+          created_at
+        )
       `
-      groups (
-        id,
-        name,
-        description,
-        currency,
-        created_by,
-        created_at
       )
-    `
-    )
-    .eq("user_id", user.id)
-    .eq("status", "active");
+      .eq("user_id", user.id)
+      .eq("status", "active"),
+  ]);
 
   const groups = error ? [] : extractGroups(memberships);
 

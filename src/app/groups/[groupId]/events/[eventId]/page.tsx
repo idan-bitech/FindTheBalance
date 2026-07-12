@@ -5,7 +5,8 @@ import { PageCard, PageSection } from "@/components/app/page-card";
 import { CancelEventForm } from "@/components/events/cancel-event-form";
 import { formatEntryDate } from "@/lib/balance-display";
 import { formatILS } from "@/domain/money";
-import { canCancelEvent, getEventDetail } from "@/server/events";
+import { canUserCancelEvent } from "@/lib/event-permissions";
+import { getEventDetail } from "@/server/events";
 import { getGroupWithMembers } from "@/server/groups";
 
 type EventDetailPageProps = {
@@ -15,19 +16,23 @@ type EventDetailPageProps = {
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const { groupId, eventId } = await params;
 
-  const groupData = await getGroupWithMembers(groupId);
+  const [groupData, event] = await Promise.all([
+    getGroupWithMembers(groupId),
+    getEventDetail(groupId, eventId),
+  ]);
+
   if (!groupData) {
     redirect("/dashboard");
   }
 
-  const event = await getEventDetail(groupId, eventId);
   if (!event) {
     redirect(`/groups/${groupId}`);
   }
 
   const isCancelled = event.status === "cancelled";
   const payerName = event.payer?.display_name ?? "משתמש";
-  const showCancelForm = !isCancelled && (await canCancelEvent(groupId, eventId));
+  const showCancelForm =
+    !isCancelled && canUserCancelEvent(event, groupData.members, groupData.currentUserId);
 
   const nonPayerEntries = event.ledgerEntries.filter(
     (entry) => entry.from_user_id !== event.paid_by_user_id

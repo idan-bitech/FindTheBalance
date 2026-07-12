@@ -10,7 +10,7 @@ import {
 } from "@/lib/balance-display";
 import { createClient } from "@/lib/supabase/server";
 import { getGroupWithMembers } from "@/server/groups";
-import { getPairBalance, getPairLedgerEntries } from "@/server/settlements";
+import { getPairPageData } from "@/server/settlements";
 
 type PairDetailPageProps = {
   params: Promise<{ groupId: string; userId: string }>;
@@ -19,28 +19,28 @@ type PairDetailPageProps = {
 export default async function PairDetailPage({ params }: PairDetailPageProps) {
   const { groupId, userId: friendUserId } = await params;
 
-  const groupData = await getGroupWithMembers(groupId);
+  const [groupData, pairData] = await Promise.all([
+    getGroupWithMembers(groupId),
+    getPairPageData(groupId, friendUserId),
+  ]);
+
   if (!groupData) {
     redirect("/dashboard");
   }
 
-  const supabase = await createClient();
-  const [pairBalance, entries, { data: currentUserProfile }] = await Promise.all([
-    getPairBalance(groupId, friendUserId),
-    getPairLedgerEntries(groupId, friendUserId),
-    supabase
-      .from("profiles")
-      .select("display_name, pronoun_preference")
-      .eq("id", groupData.currentUserId)
-      .maybeSingle(),
-  ]);
-
-  if (!pairBalance) {
+  if (!pairData) {
     redirect(`/groups/${groupId}`);
   }
 
-  const friendName = pairBalance.friend.display_name ?? "משתמש";
-  const { netAmountCents } = pairBalance;
+  const supabase = await createClient();
+  const { data: currentUserProfile } = await supabase
+    .from("profiles")
+    .select("display_name, pronoun_preference")
+    .eq("id", groupData.currentUserId)
+    .maybeSingle();
+
+  const friendName = pairData.friend.display_name ?? "משתמש";
+  const { netAmountCents, entries } = pairData;
   const summarySecondary = formatPairSummarySecondary(netAmountCents);
 
   return (

@@ -34,6 +34,8 @@ export function PairLedgerTimeline({
               })
             : null;
 
+        const eventTitleLabel = entry.source_type === "event" ? entry.eventTitle ?? "הוצאה" : null;
+
         return (
           <li
             key={entry.id}
@@ -54,6 +56,9 @@ export function PairLedgerTimeline({
                 friendName,
               })}
             </p>
+            {eventTitleLabel ? (
+              <p className="mt-1 text-sm text-stone-500">עבור: {eventTitleLabel}</p>
+            ) : null}
             {settlementDirection ? (
               <p className="mt-1 text-sm text-stone-600">{settlementDirection}</p>
             ) : null}

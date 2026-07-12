@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import {
   buttonPrimaryClassName,
@@ -23,6 +23,27 @@ type CreateEventFormProps = {
 export function CreateEventForm({ groupId, members, defaultDate }: CreateEventFormProps) {
   const boundAction = createEventAction.bind(null, groupId);
   const [state, formAction, pending] = useActionState(boundAction, initialState);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set(members.map((member) => member.user_id))
+  );
+
+  const allSelected = members.length > 0 && selectedIds.size === members.length;
+
+  function toggleMember(userId: string) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelectedIds(allSelected ? new Set() : new Set(members.map((member) => member.user_id)));
+  }
 
   return (
     <form action={formAction} className="space-y-4">
@@ -49,7 +70,16 @@ export function CreateEventForm({ groupId, members, defaultDate }: CreateEventFo
       </div>
 
       <fieldset>
-        <legend className={`${labelClassName} mb-2`}>משתתפים</legend>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <legend className={labelClassName}>משתתפים</legend>
+          <button
+            type="button"
+            onClick={toggleSelectAll}
+            className="rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+          >
+            {allSelected ? "בטל בחירה" : "בחר הכל"}
+          </button>
+        </div>
         <div className="space-y-2 rounded-xl border border-stone-200 p-4">
           {members.map((member) => (
             <label
@@ -60,7 +90,8 @@ export function CreateEventForm({ groupId, members, defaultDate }: CreateEventFo
                 type="checkbox"
                 name="participantIds"
                 value={member.user_id}
-                defaultChecked
+                checked={selectedIds.has(member.user_id)}
+                onChange={() => toggleMember(member.user_id)}
                 className="h-4 w-4 rounded border-stone-300"
               />
               <span className="text-stone-950">

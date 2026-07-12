@@ -7,12 +7,16 @@ import { createClient } from "@/lib/supabase/server";
 import { getGroupWithMembers } from "@/server/groups";
 import type { LedgerEntry, Profile } from "@/types/database";
 
-export type PairLedgerEntry = LedgerEntry;
+export type PairLedgerEntry = LedgerEntry & { eventTitle?: string | null };
 
 export type PairBalanceResult = {
   netAmountCents: number;
   friend: Profile;
   currency: string;
+};
+
+export type PairPageData = PairBalanceResult & {
+  entries: PairLedgerEntry[];
 };
 
 async function validatePairAccess(groupId: string, friendUserId: string) {
@@ -57,15 +61,18 @@ async function validatePairAccess(groupId: string, friendUserId: string) {
   };
 }
 
-export async function getPairLedgerEntries(
+type PairAccessContext = NonNullable<Awaited<ReturnType<typeof validatePairAccess>>>;
+
+/**
+ * Fetches ledger entries for a pair and, for entries sourced from an event,
+ * batches a single follow-up query to attach the event title (avoiding an
+ * N+1 query per entry).
+ */
+async function fetchPairLedgerEntries(
+  context: PairAccessContext,
   groupId: string,
   friendUserId: string
 ): Promise<PairLedgerEntry[]> {
-  const context = await validatePairAccess(groupId, friendUserId);
-  if (!context) {
-    return [];
-  }
-
   const { supabase, user } = context;
 
   const { data: entries, error } = await supabase
@@ -84,19 +91,63 @@ export async function getPairLedgerEntries(
     return [];
   }
 
-  return entries as PairLedgerEntry[];
+  const eventSourceIds = Array.from(
+    new Set(
+      entries
+        .filter((entry) => entry.source_type === "event")
+        .map((entry) => entry.source_id as string)
+    )
+  );
+
+  let eventTitleById = new Map<string, string>();
+
+  if (eventSourceIds.length > 0) {
+    const { data: eventRows } = await supabase
+      .from("events")
+      .select("id, title")
+      .in("id", eventSourceIds);
+
+    if (eventRows) {
+      eventTitleById = new Map(eventRows.map((row) => [row.id as string, row.title as string]));
+    }
+  }
+
+  return entries.map((entry) => ({
+    ...entry,
+    eventTitle:
+      entry.source_type === "event" ? (eventTitleById.get(entry.source_id) ?? null) : null,
+  })) as PairLedgerEntry[];
 }
 
-export async function getPairBalance(
+export async function getPairLedgerEntries(
   groupId: string,
   friendUserId: string
-): Promise<PairBalanceResult | null> {
+): Promise<PairLedgerEntry[]> {
+  const context = await validatePairAccess(groupId, friendUserId);
+  if (!context) {
+    return [];
+  }
+
+  return fetchPairLedgerEntries(context, groupId, friendUserId);
+}
+
+/**
+ * Single consolidated fetch for the pair detail page: validates access once
+ * and fetches the ledger entries once, deriving both the net balance and the
+ * entries list from that one round-trip instead of the page separately
+ * calling balance + entries (which used to validate access and re-fetch the
+ * ledger twice).
+ */
+export async function getPairPageData(
+  groupId: string,
+  friendUserId: string
+): Promise<PairPageData | null> {
   const context = await validatePairAccess(groupId, friendUserId);
   if (!context) {
     return null;
   }
 
-  const entries = await getPairLedgerEntries(groupId, friendUserId);
+  const entries = await fetchPairLedgerEntries(context, groupId, friendUserId);
 
   return {
     netAmountCents: getPairNetBalance({
@@ -106,6 +157,7 @@ export async function getPairBalance(
     }),
     friend: context.friend,
     currency: context.group.currency || "ILS",
+    entries,
   };
 }
 
@@ -126,7 +178,7 @@ export async function createSettlementAction(
 
   const { supabase, user, group } = context;
 
-  const entries = await getPairLedgerEntries(groupId, friendUserId);
+  const entries = await fetchPairLedgerEntries(context, groupId, friendUserId);
   const netAmountCents = getPairNetBalance({
     entries,
     userAId: user.id,

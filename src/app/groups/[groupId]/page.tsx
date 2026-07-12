@@ -35,8 +35,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const isAdmin = currentMember?.role === "admin";
 
   const [events, balances, inviteLinks] = await Promise.all([
-    getGroupEvents(groupId),
-    getMyGroupBalances(groupId),
+    getGroupEvents(groupId, currentUserId),
+    getMyGroupBalances(groupId, members, currentUserId),
     isAdmin ? getGroupInviteLinks(groupId) : Promise.resolve([]),
   ]);
 

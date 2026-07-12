@@ -1,29 +1,25 @@
 import { getPairNetBalance } from "@/domain/debt";
 import { createClient } from "@/lib/supabase/server";
-import { getGroupWithMembers } from "@/server/groups";
-import type { MemberBalance } from "@/types/database";
+import type { GroupMemberWithProfile, MemberBalance } from "@/types/database";
 
-export async function getMyGroupBalances(groupId: string): Promise<MemberBalance[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return [];
-  }
-
-  const groupData = await getGroupWithMembers(groupId);
-  if (!groupData) {
-    return [];
-  }
-
-  const otherMembers = groupData.members.filter((member) => member.user_id !== user.id);
+/**
+ * Takes the group's already-fetched members and current user id (the caller
+ * must have already validated access, e.g. via getGroupWithMembers) instead
+ * of re-fetching them, to avoid a redundant auth + group/members round-trip
+ * on every group page load.
+ */
+export async function getMyGroupBalances(
+  groupId: string,
+  members: GroupMemberWithProfile[],
+  currentUserId: string
+): Promise<MemberBalance[]> {
+  const otherMembers = members.filter((member) => member.user_id !== currentUserId);
 
   if (otherMembers.length === 0) {
     return [];
   }
 
+  const supabase = await createClient();
   const { data: entries, error } = await supabase
     .from("ledger_entries")
     .select("from_user_id, to_user_id, amount_cents")
@@ -39,7 +35,7 @@ export async function getMyGroupBalances(groupId: string): Promise<MemberBalance
     displayName: member.profiles?.display_name ?? "משתמש",
     netAmountCents: getPairNetBalance({
       entries,
-      userAId: user.id,
+      userAId: currentUserId,
       userBId: member.user_id,
     }),
   }));

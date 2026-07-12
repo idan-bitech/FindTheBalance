@@ -202,15 +202,16 @@ function isEventVisibleToUser(event: EventRow, userId: string): boolean {
   return participants?.user_id === userId;
 }
 
-export async function getGroupEvents(groupId: string): Promise<EventWithPayer[]> {
+/**
+ * Takes the already-known current user id (the caller must have already
+ * validated group access, e.g. via getGroupWithMembers) instead of calling
+ * auth.getUser() again, to avoid a redundant auth round-trip.
+ */
+export async function getGroupEvents(
+  groupId: string,
+  currentUserId: string
+): Promise<EventWithPayer[]> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return [];
-  }
 
   const { data: events, error } = await supabase
     .from("events")
@@ -247,21 +248,21 @@ export async function getGroupEvents(groupId: string): Promise<EventWithPayer[]>
   }
 
   const visibleEvents = (events as EventRow[]).filter((event) =>
-    isEventVisibleToUser(event, user.id)
+    isEventVisibleToUser(event, currentUserId)
   );
 
   return visibleEvents.slice(0, RECENT_EVENTS_DISPLAY_LIMIT).map(mapEventRow);
 }
 
+/**
+ * Assumes the caller has already validated the current user's access to
+ * this group (e.g. via getGroupWithMembers) before calling, to avoid a
+ * redundant auth + group/members round-trip.
+ */
 export async function getEventDetail(
   groupId: string,
   eventId: string
 ): Promise<EventDetail | null> {
-  const groupData = await getGroupWithMembers(groupId);
-  if (!groupData) {
-    return null;
-  }
-
   const supabase = await createClient();
 
   const { data: event, error: eventError } = await supabase
@@ -297,35 +298,35 @@ export async function getEventDetail(
     return null;
   }
 
-  const { data: participantRows, error: participantsError } = await supabase
-    .from("event_participants")
-    .select(
+  const [
+    { data: participantRows, error: participantsError },
+    { data: ledgerEntries, error: ledgerError },
+  ] = await Promise.all([
+    supabase
+      .from("event_participants")
+      .select(
+        `
+        user_id,
+        share_amount_cents,
+        profiles (
+          id,
+          display_name
+        )
       `
-      user_id,
-      share_amount_cents,
-      profiles (
-        id,
-        display_name
       )
-    `
-    )
-    .eq("event_id", eventId);
+      .eq("event_id", eventId),
+    supabase
+      .from("ledger_entries")
+      .select(
+        "id, group_id, source_type, source_id, from_user_id, to_user_id, amount_cents, currency, is_void, created_at"
+      )
+      .eq("group_id", groupId)
+      .eq("source_type", "event")
+      .eq("source_id", eventId)
+      .order("created_at", { ascending: true }),
+  ]);
 
-  if (participantsError) {
-    return null;
-  }
-
-  const { data: ledgerEntries, error: ledgerError } = await supabase
-    .from("ledger_entries")
-    .select(
-      "id, group_id, source_type, source_id, from_user_id, to_user_id, amount_cents, currency, is_void, created_at"
-    )
-    .eq("group_id", groupId)
-    .eq("source_type", "event")
-    .eq("source_id", eventId)
-    .order("created_at", { ascending: true });
-
-  if (ledgerError) {
+  if (participantsError || ledgerError) {
     return null;
   }
 
@@ -414,40 +415,4 @@ export async function cancelEventAction(
   }
 
   redirect(`/groups/${groupId}/events/${eventId}`);
-}
-
-export async function canCancelEvent(
-  groupId: string,
-  eventId: string
-): Promise<boolean> {
-  const groupData = await getGroupWithMembers(groupId);
-  if (!groupData) {
-    return false;
-  }
-
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return false;
-  }
-
-  const { data: event } = await supabase
-    .from("events")
-    .select("status, created_by")
-    .eq("id", eventId)
-    .eq("group_id", groupId)
-    .maybeSingle();
-
-  if (!event || event.status === "cancelled") {
-    return false;
-  }
-
-  const currentMember = groupData.members.find((member) => member.user_id === user.id);
-  const isAdmin = currentMember?.role === "admin";
-  const isCreator = event.created_by === user.id;
-
-  return isCreator || isAdmin;
 }
